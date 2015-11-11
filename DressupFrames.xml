@@ -1,0 +1,277 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Font name="DressupFont" font="Fonts/ARIALN.TTF" outline="NORMAL" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="0" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
+	
+	<Button name="DressupPreviewItemButtonTemplate" parent="DressUpFrame" virtual="true">
+		<Size x="37" y="37"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" parentKey="background" setAllPoints="true">
+					<TexCoords left="0.055" right="0.945" top="0.055" bottom="0.945"/>
+					<Color r="0.6" g="0.6" b="0.6" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" parentKey="icon" setAllPoints="true">
+					<TexCoords left="0.055" right="0.945" top="0.055" bottom="0.945"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentOuterBorder" parentKey="outerBorder" file="Interface\AddOns\Dressup\Border">
+					<Size x="49" y="49"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorder" parentKey="border" file="Interface\AddOns\Dressup\Border" alphaMode="ADD">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+				self.outerBorder:SetVertexColor(0, 0, 0);
+			</OnLoad>
+			<OnShow>
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+			</OnShow>
+			<OnClick function="DressupPreviewItemButton_OnClick"/>
+			<OnEnter function="DressupPreviewItemButton_OnEnter"/>
+			<OnLeave function="DressupPreviewItemButton_OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="DressupPreviewButtonHead" inherits="DressupPreviewItemButtonTemplate" id="1">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="DressUpFrame" relativePoint="TOPLEFT" x="18" y="-110"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonShoulder" inherits="DressupPreviewItemButtonTemplate" id="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="DressupPreviewButtonHead" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonBack" inherits="DressupPreviewItemButtonTemplate" id="15">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="DressupPreviewButtonShoulder" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonChest" inherits="DressupPreviewItemButtonTemplate" id="5">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="DressupPreviewButtonBack" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonShirt" inherits="DressupPreviewItemButtonTemplate" id="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="DressupPreviewButtonChest" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonTabard" inherits="DressupPreviewItemButtonTemplate" id="19">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="DressupPreviewButtonShirt" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonWrist" inherits="DressupPreviewItemButtonTemplate" id="9">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="DressupPreviewButtonTabard" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	
+	<Button name="DressupPreviewButtonHands" inherits="DressupPreviewItemButtonTemplate" id="10">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-42" y="-110"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonWaist" inherits="DressupPreviewItemButtonTemplate" id="6">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressupPreviewButtonHands" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonLegs" inherits="DressupPreviewItemButtonTemplate" id="7">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressupPreviewButtonWaist" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonFeet" inherits="DressupPreviewItemButtonTemplate" id="8">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressupPreviewButtonLegs" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	
+	<Button name="DressupPreviewButtonMainHand" inherits="DressupPreviewItemButtonTemplate" id="16">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressupPreviewButtonFeet" relativePoint="BOTTOMRIGHT" x="0" y="-38"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonOffHand" inherits="DressupPreviewItemButtonTemplate" id="17">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressupPreviewButtonMainHand" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	
+	<Frame name="DressupPaperDollItemLevelTemplate" virtual="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent"/>
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="DressupFont" parentKey="value" justifyH="CENTER">
+					<Size x="36" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="1" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="CharacterHeadSlotItemLevel" parent="CharacterHeadSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterNeckSlotItemLevel" parent="CharacterNeckSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterShoulderSlotItemLevel" parent="CharacterShoulderSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterBackSlotItemLevel" parent="CharacterBackSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterChestSlotItemLevel" parent="CharacterChestSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<!-- <Frame name="CharacterShirtSlotItemLevel" parent="CharacterShirtSlot" inherits="DressupPaperDollItemLevelTemplate"/> -->
+	<!-- <Frame name="CharacterTabardSlotItemLevel" parent="CharacterTabardSlot" inherits="DressupPaperDollItemLevelTemplate"/> -->
+	<Frame name="CharacterWristSlotItemLevel" parent="CharacterWristSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterHandsSlotItemLevel" parent="CharacterHandsSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterWaistSlotItemLevel" parent="CharacterWaistSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterLegsSlotItemLevel" parent="CharacterLegsSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterFeetSlotItemLevel" parent="CharacterFeetSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterFinger0SlotItemLevel" parent="CharacterFinger0Slot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterFinger1SlotItemLevel" parent="CharacterFinger1Slot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterTrinket0SlotItemLevel" parent="CharacterTrinket0Slot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterTrinket1SlotItemLevel" parent="CharacterTrinket1Slot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterMainHandSlotItemLevel" parent="CharacterMainHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterSecondaryHandSlotItemLevel" parent="CharacterSecondaryHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	
+	<CheckButton name="CharacterHeadSlotToggle" inherits="UICheckButtonTemplate" parent="CharacterHeadSlot">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="4"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetScale(0.65, 0.65);
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+			</OnLoad>
+			<OnShow>
+				self:SetChecked(ShowingHelm());
+			</OnShow>
+			<OnClick>
+				ShowHelm(self:GetChecked());
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	
+	<CheckButton name="CharacterBackSlotToggle" inherits="UICheckButtonTemplate" parent="CharacterBackSlot">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="4"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetScale(0.65, 0.65);
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+			</OnLoad>
+			<OnShow>
+				self:SetChecked(ShowingCloak());
+			</OnShow>
+			<OnClick>
+				ShowCloak(self:GetChecked());
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	
+	<Button name="DressupSettingsButtonTemplate" virtual="true" inherits="BrowserButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="Icon" file="Interface\Buttons\UI-OptionsButton">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="DressupSettingsButton_OnLoad"/>
+			<OnClick function="DressupSettingsButton_OnClick"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="DressupSettingsButton" inherits="DressupSettingsButtonTemplate" parent="DressUpFrame" id="1">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="14" y="74"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupCharacterPanelSettingsButton" inherits="DressupSettingsButtonTemplate" parent="PaperDollFrame" id="2">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="2"/>
+		</Anchors>
+	</Button>
+	
+	<Button name="DressUpHideArmorButton" parent="DressUpFrame" inherits="UIPanelButtonTemplate" text="Undress All">
+		<Size x="80" y="24"/>
+		<Anchors>
+			<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="DressupSettingsButton" x="-2" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnClick function="DressUpHideArmorButton_OnClick"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="DressUpRaceDropdown" parent="DressUpFrame" inherits="UIDropDownMenuTemplate">
+		<Size x="140" y="24"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-28" y="-40"/>
+		</Anchors>
+	</Frame>
+	
+	<CheckButton name="DressUpGenderButtonMale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="0">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="DressUpFrame" x="73" y="-41"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetScale(0.97, 0.97);
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+			</OnLoad>
+			<OnShow>
+				-- self:SetChecked(ShowingHelm());
+				_G[self:GetName() .. "Text"]:SetText("Male");
+			</OnShow>
+			<OnClick function="DressUpGenderButton_OnClick"/>
+		</Scripts>
+	</CheckButton>
+	
+	<CheckButton name="DressUpGenderButtonFemale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="1">
+		<Anchors>
+			<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="DressUpGenderButtonMale" x="23" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetScale(0.97, 0.97);
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+			</OnLoad>
+			<OnShow>
+				-- self:SetChecked(ShowingHelm());
+				_G[self:GetName() .. "Text"]:SetText("Female");
+			</OnShow>
+			<OnClick function="DressUpGenderButton_OnClick"/>
+		</Scripts>
+	</CheckButton>
+</Ui>

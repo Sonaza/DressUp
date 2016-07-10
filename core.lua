@@ -13,8 +13,6 @@ local paperDollSlots = {
 	["CharacterShoulderSlot"]		= 3,
 	["CharacterBackSlot"]			= 15,
 	["CharacterChestSlot"]			= 5,
-	["CharacterShirtSlot"]			= 4,
-	["CharacterTabardSlot"]			= 19,
 	["CharacterWristSlot"]			= 9,
 	["CharacterHandsSlot"]			= 10,
 	["CharacterWaistSlot"]			= 6,
@@ -178,7 +176,6 @@ end
 function Addon:UpdatePaperDollItemLevels()
 	for slotName, slotId in pairs(paperDollSlots) do
 		local frame = _G[slotName .. "ItemLevel"];
-		
 		local link = GetInventoryItemLink("player", slotId);
 		if(link) then
 			local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);

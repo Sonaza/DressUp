@@ -13,8 +13,8 @@ local paperDollSlots = {
 	["CharacterShoulderSlot"]		= 3,
 	["CharacterBackSlot"]			= 15,
 	["CharacterChestSlot"]			= 5,
-	-- ["CharacterShirtSlot"]			= 4,
-	-- ["CharacterTabardSlot"]			= 19,
+	["CharacterShirtSlot"]			= 4,
+	["CharacterTabardSlot"]			= 19,
 	["CharacterWristSlot"]			= 9,
 	["CharacterHandsSlot"]			= 10,
 	["CharacterWaistSlot"]			= 6,
@@ -43,7 +43,7 @@ local INVENTORY_SLOTS = {
 	["INVTYPE_FINGER"] = nil,
 	["INVTYPE_TRINKET"] = nil,
 	["INVTYPE_CLOAK"] = 15,
-	["INVTYPE_WEAPON"] = 16,-- 17,
+	["INVTYPE_WEAPON"] = 16,-- offhand 17,
 	["INVTYPE_SHIELD"] = 17,
 	["INVTYPE_2HWEAPON"] = 16,
 	["INVTYPE_WEAPONMAINHAND"] = 16,
@@ -181,7 +181,6 @@ function Addon:UpdatePaperDollItemLevels()
 		
 		local link = GetInventoryItemLink("player", slotId);
 		if(link) then
-			-- local _, _, itemRarity, itemLevel = GetItemInfo(link);
 			local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
 			frame.value:SetText(itemLevel);
 		else
@@ -259,12 +258,6 @@ function Addon:OnEnable()
 	DressUpFrame:HookScript("OnShow", function()
 		Addon:ResetRaceSelect();
 		Addon:ResetItemButtons(true);
-	end);
-	
-	hooksecurefunc(C_TransmogCollection, "SaveOutfit", function(...)
-		print("Save outfit");
-		print(...);
-		DATAS = {...};
 	end);
 	
 	hooksecurefunc(DressUpModel, "TryOn", function(self, ...) Addon:TryOn(...) end);
@@ -550,7 +543,6 @@ function DressUpRaceDropdown_OnClick()
 end
 
 function Addon:InitializeRaceMenu()
-	-- DressUpFrameDescriptionText:Hide();
 	DressUpFrameOutfitDropDown:ClearAllPoints();
 	DressUpFrameOutfitDropDown:SetPoint("BOTTOMLEFT", DressUpFrame, "BOTTOMLEFT", 29, 112);
 	

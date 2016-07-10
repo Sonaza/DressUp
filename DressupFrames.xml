@@ -146,8 +146,6 @@
 	<Frame name="CharacterShoulderSlotItemLevel" parent="CharacterShoulderSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterBackSlotItemLevel" parent="CharacterBackSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterChestSlotItemLevel" parent="CharacterChestSlot" inherits="DressupPaperDollItemLevelTemplate"/>
-	<!-- <Frame name="CharacterShirtSlotItemLevel" parent="CharacterShirtSlot" inherits="DressupPaperDollItemLevelTemplate"/> -->
-	<!-- <Frame name="CharacterTabardSlotItemLevel" parent="CharacterTabardSlot" inherits="DressupPaperDollItemLevelTemplate"/> -->
 	<Frame name="CharacterWristSlotItemLevel" parent="CharacterWristSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterHandsSlotItemLevel" parent="CharacterHandsSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterWaistSlotItemLevel" parent="CharacterWaistSlot" inherits="DressupPaperDollItemLevelTemplate"/>
@@ -159,42 +157,6 @@
 	<Frame name="CharacterTrinket1SlotItemLevel" parent="CharacterTrinket1Slot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterMainHandSlotItemLevel" parent="CharacterMainHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterSecondaryHandSlotItemLevel" parent="CharacterSecondaryHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
-	
-	<!-- <CheckButton name="CharacterHeadSlotToggle" inherits="UICheckButtonTemplate" parent="CharacterHeadSlot">
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="4"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				self:SetScale(0.65, 0.65);
-				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-			</OnLoad>
-			<OnShow>
-				self:SetChecked(ShowingHelm());
-			</OnShow>
-			<OnClick>
-				ShowHelm(self:GetChecked());
-			</OnClick>
-		</Scripts>
-	</CheckButton>
-	
-	<CheckButton name="CharacterBackSlotToggle" inherits="UICheckButtonTemplate" parent="CharacterBackSlot">
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="4"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				self:SetScale(0.65, 0.65);
-				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-			</OnLoad>
-			<OnShow>
-				self:SetChecked(ShowingCloak());
-			</OnShow>
-			<OnClick>
-				ShowCloak(self:GetChecked());
-			</OnClick>
-		</Scripts>
-	</CheckButton> -->
 	
 	<Button name="DressupSettingsButtonTemplate" virtual="true" inherits="BrowserButtonTemplate">
 		<Layers>

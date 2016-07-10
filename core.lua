@@ -236,10 +236,10 @@ function Addon:OnEnable()
 		end
 	end);
 	
-	-- DressUpFrame:HookScript("OnShow", function()
-	-- 	Addon:ResetRaceSelect();
-	-- 	Addon:ResetItemButtons(true);
-	-- end);
+	DressUpFrame:HookScript("OnShow", function()
+		Addon:ResetRaceSelect();
+		Addon:ResetItemButtons(true);
+	end);
 	
 	hooksecurefunc(DressUpModel, "TryOn", function(self, ...) Addon:TryOn(...) end);
 end
@@ -738,43 +738,30 @@ function Addon:ResetItemButtons(setEquipment)
 	DressUpFrameOutfitDropDown:SelectOutfit(nil, false);
 	
 	for slot, button in pairs(Addon.ItemButtons) do
-		local link = nil;
+		local itemlink = nil;
 		
 		if(setEquipment) then
 			local skip = false;
-			if(slot == 1 and not Addon:ShowingHelm()) then skip = true; end
-			if(slot == 3 and not Addon:ShowingShoulders()) then skip = true; end
-			if(slot == 15 and not Addon:ShowingCloak()) then skip = true; end
-			
 			if(slot == 19 and Addon.db.global.HideTabard) then skip = true; end
 			if((slot == 16 or slot == 17) and Addon.db.global.HideWeapons) then skip = true; end
 			
-			if(not skip) then
-				link = GetInventoryItemLink("player", slot)
+			if(not Addon:IsSlotHidden(slot) and not skip) then
+				itemlink = GetInventoryItemLink("player", slot)
 				
-				if(link) then
+				if(itemlink) then
 					local isTransmogrified, hasPending, _, _, _, hasUndo, isHideVisual = C_Transmog.GetSlotInfo(slot, LE_TRANSMOG_TYPE_APPEARANCE);
-					-- local transmogged, _, _, _, _, visible_id = GetTransmogrifySlotInfo(slot);
 					local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = Addon:GetInfoForSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE)
 				
 					if(isTransmogrified and not isHideVisual) then
-						-- link = select(2, GetItemInfo(visible_id));
-						link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(appliedSourceID));
+						itemlink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(appliedSourceID));
 					elseif(isHideVisual) then
-						link = nil;
+						itemlink = nil;
 					end
-					
-					-- if(link and slot == 16) then
-					-- 	local invtype = select(9, GetItemInfo(link));
-					-- 	if(invtype == "INVTYPE_RANGED" or invtype == "INVTYPE_RANGEDRIGHT") then
-					-- 		link = nil;
-					-- 	end
-					-- end
 				end
 			end
 		end
 		
-		Addon:SetButtonItem(slot, link);
+		Addon:SetButtonItem(slot, itemlink);
 	end
 end
 
@@ -861,7 +848,6 @@ function Addon:TryOn(displayID, previewSlot, enchantID)
 	-- Don't display hidden cloak
 	if(displayID == 77345) then return end
 	
-	print(displayID, previewSlot, enchantID, targetSlotID);
 	Addon:SetButtonItem(targetSlotID, itemlink);
 	
 	if(targetSlotID ~= nil and not previewSlot) then
@@ -932,8 +918,6 @@ function DressUpVisual(...)
 	else
 		if(not DressUpFrame:IsShown()) then
 			DressUpFrame_Show();
-			Addon:ResetRaceSelect();
-			Addon:ResetItemButtons(true);
 		end
 		DressUpModel:TryOn(...);
 	end
@@ -1002,7 +986,6 @@ function DressUpItemLinkA(link)
 			if(currentItemLink) then
 				currentItemEquipLoc = select(9, GetItemInfo(currentItemLink));
 			end
-			-- print(slot, link, currentItemLink, itemEquipLoc, currentItemEquipLoc);
 			
 			if(itemEquipLoc == "INVTYPE_WEAPONOFFHAND" or itemEquipLoc == "INVTYPE_HOLDABLE") then
 				Addon.WeaponPreviewSlot = 0;

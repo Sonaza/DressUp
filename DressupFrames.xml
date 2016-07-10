@@ -58,7 +58,7 @@
 	
 	<Button name="DressupPreviewButtonHead" inherits="DressupPreviewItemButtonTemplate" id="1">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="DressUpFrame" relativePoint="TOPLEFT" x="18" y="-110"/>
+			<Anchor point="TOPLEFT" relativeTo="DressUpFrame" relativePoint="TOPLEFT" x="18" y="-95"/>
 		</Anchors>
 	</Button>
 	<Button name="DressupPreviewButtonShoulder" inherits="DressupPreviewItemButtonTemplate" id="3">
@@ -94,7 +94,7 @@
 	
 	<Button name="DressupPreviewButtonHands" inherits="DressupPreviewItemButtonTemplate" id="10">
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-42" y="-110"/>
+			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-42" y="-95"/>
 		</Anchors>
 	</Button>
 	<Button name="DressupPreviewButtonWaist" inherits="DressupPreviewItemButtonTemplate" id="6">
@@ -160,7 +160,7 @@
 	<Frame name="CharacterMainHandSlotItemLevel" parent="CharacterMainHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterSecondaryHandSlotItemLevel" parent="CharacterSecondaryHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	
-	<CheckButton name="CharacterHeadSlotToggle" inherits="UICheckButtonTemplate" parent="CharacterHeadSlot">
+	<!-- <CheckButton name="CharacterHeadSlotToggle" inherits="UICheckButtonTemplate" parent="CharacterHeadSlot">
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="4"/>
 		</Anchors>
@@ -194,7 +194,7 @@
 				ShowCloak(self:GetChecked());
 			</OnClick>
 		</Scripts>
-	</CheckButton>
+	</CheckButton> -->
 	
 	<Button name="DressupSettingsButtonTemplate" virtual="true" inherits="BrowserButtonTemplate">
 		<Layers>
@@ -235,6 +235,11 @@
 	</Button>
 	
 	<Frame name="DressUpRaceDropdown" parent="DressUpFrame" inherits="UIDropDownMenuTemplate">
+		<KeyValues>
+			<KeyValue key="width" value="163" type="number"/>
+			<KeyValue key="minMenuStringWidth" value="127" type="number"/>
+			<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
+		</KeyValues>
 		<Size x="140" y="24"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-28" y="-40"/>

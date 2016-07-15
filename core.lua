@@ -224,10 +224,6 @@ function Addon:OnEnable()
 	Addon:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	Addon:RegisterEvent("MODIFIER_STATE_CHANGED");
 	
-	Addon:InitializeDressUpFrame();
-	Addon:InitializePaperDoll();
-	
-	Addon.WeaponPreviewSlot = 0;
 	Addon.ItemButtons = {};
 	
 	Addon:InitializeItemButtons();
@@ -238,13 +234,23 @@ function Addon:OnEnable()
 	Addon:ToggleBackgroundDim();
 	Addon:ToggleGizmo();
 	
-	DressUpModel:HookScript("OnMouseDown", function(self, button)
+	-- Initialize hooks
+	
+	Addon:HookScript(PaperDollFrame, "OnShow", function()
+		Addon:PAPERDOLL_OPENED()
+	end);
+	
+	Addon:HookScript(PaperDollFrame, "OnHide", function()
+		Addon:PAPERDOLL_CLOSED()
+	end);
+	
+	Addon:HookScript(DressUpModel, "OnMouseDown", function(self, button)
 		if(IsControlKeyDown() and button == "MiddleButton") then
 			Addon:SwitchBackground(0);
 		end
 	end);
 	
-	DressUpModel:SetScript("OnMouseWheel", function(self, delta)
+	Addon:SetScript(DressUpModel, "OnMouseWheel", function(self, delta)
 		if(not IsControlKeyDown()) then
 			Model_OnMouseWheel(self, delta);
 		else
@@ -252,9 +258,14 @@ function Addon:OnEnable()
 		end
 	end);
 	
-	DressUpFrame:HookScript("OnShow", function()
+	Addon:HookScript(DressUpFrame, "OnShow", function()
 		Addon:ResetRaceSelect();
 		Addon:ResetItemButtons(true);
+	end);
+	
+	Addon:HookScript(DressUpFrameResetButton, "OnClick", function()
+		Addon:ResetItemButtons(true);
+		Addon:ResetRaceSelect();
 	end);
 	
 	hooksecurefunc(DressUpModel, "TryOn", function(self, ...) Addon:TryOn(...) end);
@@ -722,27 +733,6 @@ function DressUpHideArmorButton_OnClick(self)
 	Addon:ResetItemButtons();
 end
 
-function Addon:InitializeDressUpFrame()
-	Addon:HookScript(DressUpFrameResetButton, "OnClick", function()
-		Addon:ResetItemButtons(true);
-		Addon.WeaponPreviewSlot = 0;
-		
-		Addon:ResetRaceSelect();
-	end);
-end
-
-function Addon:InitializePaperDoll()
-	Addon.PaperDollOpen = false;
-	
-	Addon:HookScript(PaperDollFrame, "OnShow", function()
-		Addon:PAPERDOLL_OPENED()
-	end);
-	
-	Addon:HookScript(PaperDollFrame, "OnHide", function()
-		Addon:PAPERDOLL_CLOSED()
-	end);
-end
-
 function Addon:IsSlotHidden(slot_id)
 	if(slot_id == 1 and not Addon:ShowingHelm()) then return true end
 	if(slot_id == 3 and not Addon:ShowingShoulders()) then return true end
@@ -851,11 +841,13 @@ function Addon:TryOn(displayID, previewSlot, enchantID)
 	
 	Addon:SetButtonItem(targetSlotID, itemlink);
 	
-	-- Update weapons separately since in case of dualwielding, blizz preview is all kinds of wonky
-	local mainhand = Addon:GetItemSourceID(16);
-	local offhand = Addon:GetItemSourceID(17);
-	Addon:SetButtonItem(16, Addon:GetItemLinkFromSource(mainhand));
-	Addon:SetButtonItem(17, Addon:GetItemLinkFromSource(offhand));
+	if(not Addon.db.global.HideWeapons) then
+		-- Update weapons separately since in case of dualwielding, blizz preview is all kinds of wonky
+		local mainhand = Addon:GetItemSourceID(16);
+		local offhand = Addon:GetItemSourceID(17);
+		Addon:SetButtonItem(16, Addon:GetItemLinkFromSource(mainhand));
+		Addon:SetButtonItem(17, Addon:GetItemLinkFromSource(offhand));
+	end
 end
 
 function Addon:GetInvSlot(equiploc)
@@ -898,17 +890,8 @@ function Addon:GetSlotItem(slot)
 	return nil;
 end
 
-function Addon:OnDisable()
-		
-end
-
 function Addon:PAPERDOLL_OPENED()
-	Addon.PaperDollOpen = true;
 	Addon:UpdatePaperDollItemLevels();
-end
-
-function Addon:PAPERDOLL_CLOSED()
-	Addon.PaperDollOpen = false;
 end
 
 function Addon:PLAYER_EQUIPMENT_CHANGED(event, slot, hasItem)

@@ -258,6 +258,10 @@ function Addon:OnEnable()
 	end);
 	
 	hooksecurefunc(DressUpModel, "TryOn", function(self, ...) Addon:TryOn(...) end);
+	
+	hooksecurefunc(DressUpModel, "Dress", function()
+		Addon:HideConditionalSlots();
+	end);
 end
 
 function Addon:ToggleBackgroundDim()

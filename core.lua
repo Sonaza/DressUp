@@ -240,21 +240,17 @@ function Addon:OnEnable()
 		Addon:PAPERDOLL_OPENED()
 	end);
 	
-	Addon:HookScript(PaperDollFrame, "OnHide", function()
-		Addon:PAPERDOLL_CLOSED()
+	DressUpModel:SetScript("OnMouseWheel", function(self, delta)
+		if(not IsControlKeyDown()) then
+			Model_OnMouseWheel(self, delta);
+		else
+			Addon:SwitchBackground(delta);
+		end
 	end);
 	
 	Addon:HookScript(DressUpModel, "OnMouseDown", function(self, button)
 		if(IsControlKeyDown() and button == "MiddleButton") then
 			Addon:SwitchBackground(0);
-		end
-	end);
-	
-	Addon:SetScript(DressUpModel, "OnMouseWheel", function(self, delta)
-		if(not IsControlKeyDown()) then
-			Model_OnMouseWheel(self, delta);
-		else
-			Addon:SwitchBackground(delta);
 		end
 	end);
 	
@@ -269,6 +265,10 @@ function Addon:OnEnable()
 	end);
 	
 	hooksecurefunc(DressUpModel, "TryOn", function(self, ...) Addon:TryOn(...) end);
+	
+	hooksecurefunc("DressUpFrame_Show", function()
+		Addon:HideConditionalSlots();
+	end);
 	
 	hooksecurefunc(DressUpModel, "Dress", function()
 		Addon:HideConditionalSlots();
@@ -581,10 +581,6 @@ function DressupPreviewItemButton_OnClick(self, button)
 	elseif(button == "RightButton") then
 		Addon:SetButtonItem(slot, nil);
 		DressUpModel:UndressSlot(slot);
-			
-		if(slot == 16 or slot == 17) then
-			Addon.WeaponPreviewSlot = 0;
-		end
 		
 		GameTooltip:ClearLines();
 		GameTooltip:AddLine(Addon.ItemButtons[slot].SlotName);
@@ -672,16 +668,19 @@ end
 function Addon:HideConditionalSlots()
 	if(Addon.db.global.HideTabard) then
 		DressUpModel:UndressSlot(19);
+		Addon:SetButtonItem(19, nil);
 	end
 	
 	if(Addon.db.global.HideWeapons) then
 		DressUpModel:UndressSlot(16);
+		Addon:SetButtonItem(16, nil);
+		
 		DressUpModel:UndressSlot(17);
+		Addon:SetButtonItem(17, nil);
 	end
 end
 
 function Addon:ResetItemButtons(setEquipment)
-	Addon:HideConditionalSlots();
 	DressUpFrameOutfitDropDown:SelectOutfit(nil, false);
 	
 	for slot, button in pairs(Addon.ItemButtons) do
@@ -710,6 +709,8 @@ function Addon:ResetItemButtons(setEquipment)
 		
 		Addon:SetButtonItem(slot, itemlink);
 	end
+	
+	Addon:HideConditionalSlots();
 end
 
 function Addon:ReapplyPreviewItems()
@@ -841,7 +842,7 @@ function Addon:TryOn(displayID, previewSlot, enchantID)
 	
 	Addon:SetButtonItem(targetSlotID, itemlink);
 	
-	if(not Addon.db.global.HideWeapons) then
+	if(not Addon.db.global.HideWeapons or targetSlotID == 16 or targetSlotID == 17) then
 		-- Update weapons separately since in case of dualwielding, blizz preview is all kinds of wonky
 		local mainhand = Addon:GetItemSourceID(16);
 		local offhand = Addon:GetItemSourceID(17);

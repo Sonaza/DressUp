@@ -234,6 +234,10 @@ function Addon:OnEnable()
 			Addon:SwitchBackground(delta);
 		end
 	end);
+	
+	hooksecurefunc(DressUpModel, "Dress", function()
+		Addon:HideConditionalSlots();
+	end);
 end
 
 function Addon:ToggleBackgroundDim()
@@ -779,17 +783,6 @@ function DressUpHideArmorButton_OnClick(self)
 end
 
 function Addon:InitializeDressUpFrame()
-	
-	-- Addon:HookScript(DressUpFrame, "OnShow", function()
-	-- 	if(self.db.global.SaveCustomBackground and self.db.global.CustomBackground) then
-	-- 		Addon.CustomBackground = self.db.global.CustomBackground;
-	-- 		Addon:SetCustomBackground(self.db.global.CustomBackground);
-	-- 	end
-	-- end);
-	-- Addon:HookScript(DressUpFrame, "OnHide", function()
-	-- 	Addon:DRESSUP_CLOSED()
-	-- end);
-
 	Addon:HookScript(DressUpFrameResetButton, "OnClick", function()
 		Addon:ResetItemButtons(true);
 		Addon.WeaponPreviewSlot = 0;

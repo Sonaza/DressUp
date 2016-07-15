@@ -187,6 +187,9 @@ function Addon:OnInitialize()
 			HideItemLevel = false,
 			HideItemToggle = false,
 			
+			HideTabard = false,
+			HideWeapons = false,
+			
 			SaveCustomBackground = false,
 			CustomBackground = nil,
 		},
@@ -266,13 +269,13 @@ function DressupSettingsButton_OnClick(self)
 			text = "DressUp Options", isTitle = true, notCheckable = true,
 		},
 		{
-			text = "Dim the Preview Background",
+			text = "Dim the preview background",
 			func = function() Addon.db.global.DimBackground = not Addon.db.global.DimBackground; Addon:ToggleBackgroundDim(); end,
 			checked = function() return Addon.db.global.DimBackground end,
 			isNotRadio = true,
 		},
 		{
-			text = "Save Custom Background",
+			text = "Save custom background",
 			func = function()
 				Addon.db.global.SaveCustomBackground = not Addon.db.global.SaveCustomBackground;
 				if(not Addon.db.global.SaveCustomBackground) then
@@ -285,15 +288,27 @@ function DressupSettingsButton_OnClick(self)
 			isNotRadio = true,
 		},
 		{
-			text = "Hide Model Control Gizmo",
+			text = "Hide model control gizmo",
 			func = function() Addon.db.global.HideGizmo = not Addon.db.global.HideGizmo; Addon:ToggleGizmo(); end,
 			checked = function() return Addon.db.global.HideGizmo end,
 			isNotRadio = true,
 		},
 		{
-			text = "Disable Side Panel Preview",
+			text = "Disable side panel preview",
 			func = function() Addon.db.global.DisableSidePanel = not Addon.db.global.DisableSidePanel; end,
 			checked = function() return Addon.db.global.DisableSidePanel end,
+			isNotRadio = true,
+		},
+		{
+			text = "Always hide tabard",
+			func = function() Addon.db.global.HideTabard = not Addon.db.global.HideTabard; end,
+			checked = function() return Addon.db.global.HideTabard end,
+			isNotRadio = true,
+		},
+		{
+			text = "Always hide weapons",
+			func = function() Addon.db.global.HideWeapons = not Addon.db.global.HideWeapons; end,
+			checked = function() return Addon.db.global.HideWeapons end,
 			isNotRadio = true,
 		},
 		{
@@ -303,13 +318,13 @@ function DressupSettingsButton_OnClick(self)
 			text = "Character Panel", isTitle = true, notCheckable = true,
 		},
 		{
-			text = "Hide Item Levels",
+			text = "Hide item levels",
 			func = function() Addon.db.global.HideItemLevel = not Addon.db.global.HideItemLevel; end,
 			checked = function() return Addon.db.global.HideItemLevel end,
 			isNotRadio = true,
 		},
 		{
-			text = "Hide Helm and Cloak Display Toggle",
+			text = "Hide helm and cloak display toggle",
 			func = function() Addon.db.global.HideItemToggle = not Addon.db.global.HideItemToggle; Addon:UpdateItemToggleVisibility(); end,
 			checked = function() return Addon.db.global.HideItemToggle end,
 			isNotRadio = true,
@@ -663,13 +678,29 @@ function Addon:InitializeItemButtons()
 	end
 end
 
+function Addon:HideConditionalSlots()
+	if(Addon.db.global.HideTabard) then
+		DressUpModel:UndressSlot(19);
+	end
+	
+	if(Addon.db.global.HideWeapons) then
+		DressUpModel:UndressSlot(16);
+		DressUpModel:UndressSlot(17);
+	end
+end
+
 function Addon:ResetItemButtons(setEquipment)
+	Addon:HideConditionalSlots();
+	
 	for slot, button in pairs(Addon.ItemButtons) do
 		local link = nil;
 		if(setEquipment) then
 			local skip = false;
 			if(slot == 1 and not ShowingHelm()) then skip = true; end
 			if(slot == 15 and not ShowingCloak()) then skip = true; end
+			
+			if(slot == 19 and Addon.db.global.HideTabard) then skip = true; end
+			if((slot == 16 or slot == 17) and Addon.db.global.HideWeapons) then skip = true; end
 			
 			if(not skip) then
 				link = GetInventoryItemLink("player", slot)

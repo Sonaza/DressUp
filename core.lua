@@ -7,62 +7,12 @@ _G[ADDON_NAME] = Addon;
 
 local _;
 
-local CLASS_DUALWIELD_ABILITY = {
-	["WARRIOR"]	= {
-		[0] = false,
-		[2] = true,  	-- Fury
-	},
-	["DEATHKNIGHT"]	= {
-		[0] = true,
-		[1] = false,
-	},
-	["PALADIN"]	= {
-		[0] = false,
-	},
-	["MONK"] = {
-		[1] = true,		-- Brewmaster
-		[2] = false,	-- Mistweaver
-		[3] = true,		-- Windwalker
-	},
-	["PRIEST"] = {
-		[0] = false,
-	},
-	["SHAMAN"] = {
-		[0] = false,
-		[2] = true,		-- Enhancement
-	},
-	["DRUID"] = {
-		[0] = false,
-	},
-	["ROGUE"] = {
-		[0] = true,
-	},
-	["MAGE"] = {
-		[0] = false,
-	},
-	["WARLOCK"] = {
-		[0] = false,
-	},
-	["HUNTER"] = {
-		[0] = true,
-	},
-};
-
-function Addon:CanPlayerDualWield()
-	local _, class = UnitClass("player");
-	local spec = GetSpecialization();
-	
-	return CLASS_DUALWIELD_ABILITY[class][spec] or CLASS_DUALWIELD_ABILITY[class][0], class == "WARRIOR" and spec == 2;
-end
-
 local paperDollSlots = {
 	["CharacterHeadSlot"]			= 1,
 	["CharacterNeckSlot"]			= 2,
 	["CharacterShoulderSlot"]		= 3,
 	["CharacterBackSlot"]			= 15,
 	["CharacterChestSlot"]			= 5,
-	-- ["CharacterShirtSlot"]			= 4,
-	-- ["CharacterTabardSlot"]			= 19,
 	["CharacterWristSlot"]			= 9,
 	["CharacterHandsSlot"]			= 10,
 	["CharacterWaistSlot"]			= 6,
@@ -91,7 +41,7 @@ local INVENTORY_SLOTS = {
 	["INVTYPE_FINGER"] = nil,
 	["INVTYPE_TRINKET"] = nil,
 	["INVTYPE_CLOAK"] = 15,
-	["INVTYPE_WEAPON"] = 16,-- 17,
+	["INVTYPE_WEAPON"] = 16,-- offhand 17,
 	["INVTYPE_SHIELD"] = 17,
 	["INVTYPE_2HWEAPON"] = 16,
 	["INVTYPE_WEAPONMAINHAND"] = 16,
@@ -105,20 +55,92 @@ local INVENTORY_SLOTS = {
 };
 
 local INVENTORY_SLOT_NAMES = {
-	[1]	= "HEADSLOT",
-	[3] = "SHOULDERSLOT",
-	[4] = "SHIRTSLOT",
-	[5] = "CHESTSLOT",
-	[6] = "WAISTSLOT",
-	[7] = "LEGSSLOT",
-	[8] = "FEETSLOT",
-	[9] = "WRISTSLOT",
+	[1]  = "HEADSLOT",
+	[3]  = "SHOULDERSLOT",
+	[4]  = "SHIRTSLOT",
+	[5]  = "CHESTSLOT",
+	[6]  = "WAISTSLOT",
+	[7]  = "LEGSSLOT",
+	[8]  = "FEETSLOT",
+	[9]  = "WRISTSLOT",
 	[10] = "HANDSSLOT",
 	[15] = "BACKSLOT",
 	[16] = "MAINHANDSLOT",
 	[17] = "SECONDARYHANDSLOT",
 	[19] = "TABARDSLOT",
+	
+	["HEADSLOT"]          = 1,
+	["SHOULDERSLOT"]      = 3,
+	["SHIRTSLOT"]         = 4,
+	["CHESTSLOT"]         = 5,
+	["WAISTSLOT"]         = 6,
+	["LEGSSLOT"]          = 7,
+	["FEETSLOT"]          = 8,
+	["WRISTSLOT"]         = 9,
+	["HANDSSLOT"]         = 10,
+	["BACKSLOT"]          = 15,
+	["MAINHANDSLOT"]      = 16,
+	["SECONDARYHANDSLOT"] = 17,
+	["TABARDSLOT"]        = 19,
 };
+
+-- 1 - Human
+-- 2 - Orc
+-- 3 - Dwarf
+-- 4 - Nightelf
+-- 5 - Undead
+-- 6 - Tauren
+-- 7 - Gnome
+-- 8 - Troll
+-- 9 - Goblin
+-- 10 - Bloodelf
+-- 11 - Draenei
+-- 22 - Worgen
+-- 24 - Pandaren
+-- 25 - Alliance Pandaren
+-- 26 - Horde Pandaren
+
+local RACES = {
+	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen",
+	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin",
+	"Pandaren",
+};
+
+local RACE_IDS = {
+	1, 3, 4, 7, 11, 22, 2, 5, 6, 8, 10, 9, 24,
+}
+
+local RACE_NAMES = {
+	[1]	 = "Human",
+	[3]	 = "Dwarf",
+	[4]	 = "NightElf",
+	[7]	 = "Gnome",
+	[11] = "Draenei",
+	[22] = "Worgen",
+	[2]	 = "Orc",
+	[5]	 = "Scourge",
+	[6]	 = "Tauren",
+	[8]	 = "Troll",
+	[10] = "BloodElf",
+	[9]	 = "Goblin",
+	[24] = "Pandaren",
+	[0]	 = "Pet",
+	
+	["Human"]		= 1,
+	["Dwarf"]		= 3,
+	["NightElf"]	= 4,
+	["Gnome"]		= 7,
+	["Draenei"]		= 11,
+	["Worgen"]		= 22,
+	["Orc"]			= 2,
+	["Scourge"]		= 5,
+	["Tauren"]		= 6,
+	["Troll"]		= 8,
+	["BloodElf"]	= 10,
+	["Goblin"]		= 9,
+	["Pandaren"]	= 24,
+	["Pet"]			= 0,
+}
 
 local tooltip = nil;
 
@@ -154,10 +176,8 @@ end
 function Addon:UpdatePaperDollItemLevels()
 	for slotName, slotId in pairs(paperDollSlots) do
 		local frame = _G[slotName .. "ItemLevel"];
-		
 		local link = GetInventoryItemLink("player", slotId);
 		if(link) then
-			-- local _, _, itemRarity, itemLevel = GetItemInfo(link);
 			local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
 			frame.value:SetText(itemLevel);
 		else
@@ -185,7 +205,6 @@ function Addon:OnInitialize()
 			HideGizmo = true,
 			DisableSidePanel = true,
 			HideItemLevel = false,
-			HideItemToggle = false,
 			
 			HideTabard = false,
 			HideWeapons = false,
@@ -202,14 +221,9 @@ local DressUpModelOnEnter = DressUpModel:GetScript("OnEnter");
 local DressUpModelOnLeave = DressUpModel:GetScript("OnLeave");
 
 function Addon:OnEnable()
-	Addon:RegisterEvent("TRANSMOGRIFY_OPEN");
 	Addon:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	Addon:RegisterEvent("MODIFIER_STATE_CHANGED");
 	
-	Addon:InitializeDressUpFrame();
-	Addon:InitializePaperDoll();
-	
-	Addon.WeaponPreviewSlot = 0;
 	Addon.ItemButtons = {};
 	
 	Addon:InitializeItemButtons();
@@ -220,11 +234,10 @@ function Addon:OnEnable()
 	Addon:ToggleBackgroundDim();
 	Addon:ToggleGizmo();
 	
-	-- DressUpModel:RegisterForClicks("LeftButtonUp", "MiddleButtonUp");
-	DressUpModel:HookScript("OnMouseDown", function(self, button)
-		if(IsControlKeyDown() and button == "MiddleButton") then
-			Addon:SwitchBackground(0);
-		end
+	-- Initialize hooks
+	
+	Addon:HookScript(PaperDollFrame, "OnShow", function()
+		Addon:PAPERDOLL_OPENED()
 	end);
 	
 	DressUpModel:SetScript("OnMouseWheel", function(self, delta)
@@ -233,6 +246,28 @@ function Addon:OnEnable()
 		else
 			Addon:SwitchBackground(delta);
 		end
+	end);
+	
+	Addon:HookScript(DressUpModel, "OnMouseDown", function(self, button)
+		if(IsControlKeyDown() and button == "MiddleButton") then
+			Addon:SwitchBackground(0);
+		end
+	end);
+	
+	Addon:HookScript(DressUpFrame, "OnShow", function()
+		Addon:ResetRaceSelect();
+		Addon:ResetItemButtons(true);
+	end);
+	
+	Addon:HookScript(DressUpFrameResetButton, "OnClick", function()
+		Addon:ResetItemButtons(true);
+		Addon:ResetRaceSelect();
+	end);
+	
+	hooksecurefunc(DressUpModel, "TryOn", function(self, ...) Addon:TryOn(...) end);
+	
+	hooksecurefunc("DressUpFrame_Show", function()
+		Addon:HideConditionalSlots();
 	end);
 	
 	hooksecurefunc(DressUpModel, "Dress", function()
@@ -327,12 +362,6 @@ function DressupSettingsButton_OnClick(self)
 			checked = function() return Addon.db.global.HideItemLevel end,
 			isNotRadio = true,
 		},
-		{
-			text = "Hide helm and cloak display toggle",
-			func = function() Addon.db.global.HideItemToggle = not Addon.db.global.HideItemToggle; Addon:UpdateItemToggleVisibility(); end,
-			checked = function() return Addon.db.global.HideItemToggle end,
-			isNotRadio = true,
-		},
 	};
 	
 	Addon.ContextMenu:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
@@ -342,14 +371,8 @@ function DressupSettingsButton_OnClick(self)
 	DropDownList1:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
 end
 
-function Addon:UpdateItemToggleVisibility()
-	local visible = not self.db.global.HideItemToggle;
-	CharacterHeadSlotToggle:SetShown(visible and GetInventoryItemLink("player", 1) ~= nil);
-	CharacterBackSlotToggle:SetShown(visible and GetInventoryItemLink("player", 15) ~= nil);
-end
-
 function Addon:ResetRaceSelect()
-	local _, raceId = UnitRace("player");
+	local _, raceID = UnitRace("player");
 
 	Addon.CustomBackground = nil;
 	Addon.SelectedRace = -1;
@@ -369,73 +392,15 @@ function Addon:ResetRaceSelect()
 		Addon.CustomBackground = self.db.global.CustomBackground;
 		Addon:SetCustomBackground(self.db.global.CustomBackground);
 	else
-		SetDressUpBackground(DressUpFrame, raceId);
+		SetDressUpBackground(DressUpFrame, raceID);
 	end
 	
 	UIDropDownMenu_SetText(DressUpRaceDropdown, "Change Preview Race");
 end
 
--- 1 - Human
--- 2 - Orc
--- 3 - Dwarf
--- 4 - Nightelf
--- 5 - Undead
--- 6 - Tauren
--- 7 - Gnome
--- 8 - Troll
--- 9 - Goblin
--- 10 - Bloodelf
--- 11 - Draenei
--- 22 - Worgen
--- 24 - Pandaren
--- 25 - Alliance Pandaren
--- 26 - Horde Pandaren
-
-local races = {
-	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen",
-	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin",
-	"Pandaren",
-};
-
-local raceIds = {
-	1, 3, 4, 7, 11, 22, 2, 5, 6, 8, 10, 9, 24,
-}
-
-local raceNames = {
-	[1]	 = "Human",
-	[3]	 = "Dwarf",
-	[4]	 = "NightElf",
-	[7]	 = "Gnome",
-	[11] = "Draenei",
-	[22] = "Worgen",
-	[2]	 = "Orc",
-	[5]	 = "Scourge",
-	[6]	 = "Tauren",
-	[8]	 = "Troll",
-	[10] = "BloodElf",
-	[9]	 = "Goblin",
-	[24] = "Pandaren",
-	[0]	 = "Pet",
-	
-	["Human"]		= 1,
-	["Dwarf"]		= 3,
-	["NightElf"]	= 4,
-	["Gnome"]		= 7,
-	["Draenei"]		= 11,
-	["Worgen"]		= 22,
-	["Orc"]			= 2,
-	["Scourge"]		= 5,
-	["Tauren"]		= 6,
-	["Troll"]		= 8,
-	["BloodElf"]	= 10,
-	["Goblin"]		= 9,
-	["Pandaren"]	= 24,
-	["Pet"]			= 0,
-}
-
-function Addon:GetRaceIndex(raceId)
-	for k, id in ipairs(raceIds) do
-		if(id == raceId) then return k end
+function Addon:GetRaceIndex(raceID)
+	for k, id in ipairs(RACE_IDS) do
+		if(id == raceID) then return k end
 	end
 	
 	return nil;
@@ -447,7 +412,7 @@ function Addon:SetCustomBackground(background_id)
 	if(background_id == 0) then
 		SetDressUpBackground(DressUpFrame, "Pet");
 	else
-		SetDressUpBackground(DressUpFrame, raceNames[raceIds[Addon.CustomBackground]]);
+		SetDressUpBackground(DressUpFrame, RACE_NAMES[RACE_IDS[Addon.CustomBackground]]);
 	end
 end
 
@@ -459,7 +424,7 @@ function Addon:SwitchBackground(dir)
 			local id;
 			if(Addon.SelectedRace == -1) then
 				local _, raceId = UnitRace("player");
-				id = raceNames[raceId];
+				id = RACE_NAMES[raceId];
 			else
 				id = Addon.SelectedRace;
 			end
@@ -531,15 +496,12 @@ function DressUpRaceDropdown_SelectOption(self)
 	
 	DressUpModel:SetCustomRace(self.value.id, Addon.SelectedGender);
 	if(Addon.CustomBackground == nil) then
-		SetDressUpBackground(DressUpFrame, raceNames[self.value.id]);
+		SetDressUpBackground(DressUpFrame, RACE_NAMES[self.value.id]);
 	end
 	
 	UIDropDownMenu_SetText(DressUpRaceDropdown, self.value.name);
 	
 	Addon:ReapplyPreviewItems();
-	
-	-- SetDressUpBackground(DressUpFrame, "Pet");
-	-- UIDropDownMenu_SetSelectedID(DressUpRaceDropdown, self:GetID());
 end
 
 function Addon:GenerateRaceMenu()
@@ -551,7 +513,7 @@ function Addon:GenerateRaceMenu()
 		[13] = "Neutral",
 	};
 	
-	for k, v in ipairs(races) do
+	for k, v in ipairs(RACES) do
 		if(factions[k] ~= nil) then
 			if(k > 1) then
 				tinsert(menu, {
@@ -567,7 +529,7 @@ function Addon:GenerateRaceMenu()
 		tinsert(menu, {
 			text = v,
 			value = {
-				id = raceIds[k],
+				id = RACE_IDS[k],
 				name = v,
 			},
 			func = DressUpRaceDropdown_SelectOption,
@@ -593,11 +555,16 @@ function DressUpRaceDropdown_OnClick()
 end
 
 function Addon:InitializeRaceMenu()
-	DressUpFrameDescriptionText:Hide();
+	DressUpFrameOutfitDropDown:ClearAllPoints();
+	DressUpFrameOutfitDropDown:SetPoint("BOTTOMLEFT", DressUpFrame, "BOTTOMLEFT", 29, 112);
+	
+	DressUpFrameOutfitDropDown:SetFrameStrata(DressUpModel:GetFrameStrata());
+	DressUpFrameOutfitDropDown:SetFrameLevel(DressUpModel:GetFrameLevel()+1);
+	
 	DressUpRaceDropdownButton:SetScript("OnClick", DressUpRaceDropdown_OnClick);
 	
 	UIDropDownMenu_SetWidth(DressUpRaceDropdown, 132);
-	UIDropDownMenu_SetButtonWidth(DressUpRaceDropdown, 132);
+	-- UIDropDownMenu_SetButtonWidth(DressUpRaceDropdown, 132);
 	UIDropDownMenu_JustifyText(DressUpRaceDropdown, "RIGHT");
 	-- UIDropDownMenu_SetSelectedID(DressUpRaceDropdown, 1);
 	
@@ -614,10 +581,6 @@ function DressupPreviewItemButton_OnClick(self, button)
 	elseif(button == "RightButton") then
 		Addon:SetButtonItem(slot, nil);
 		DressUpModel:UndressSlot(slot);
-			
-		if(slot == 16 or slot == 17) then
-			Addon.WeaponPreviewSlot = 0;
-		end
 		
 		GameTooltip:ClearLines();
 		GameTooltip:AddLine(Addon.ItemButtons[slot].SlotName);
@@ -682,99 +645,88 @@ function Addon:InitializeItemButtons()
 	end
 end
 
+function Addon:GetInfoForSlot(slot_id, transmogType)
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(slot_id, transmogType);
+	if ( appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
+		appliedSourceID = baseSourceID;
+		appliedVisualID = baseVisualID;
+	end
+	local selectedSourceID, selectedVisualID;
+	if ( pendingSourceID ~= REMOVE_TRANSMOG_ID ) then
+		selectedSourceID = pendingSourceID;
+		selectedVisualID = pendingVisualID;
+	elseif ( hasPendingUndo ) then
+		selectedSourceID = baseSourceID;
+		selectedVisualID = baseVisualID;
+	else
+		selectedSourceID = appliedSourceID;
+		selectedVisualID = appliedVisualID;
+	end
+	return appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID;
+end
+
 function Addon:HideConditionalSlots()
 	if(Addon.db.global.HideTabard) then
 		DressUpModel:UndressSlot(19);
+		Addon:SetButtonItem(19, nil);
 	end
 	
 	if(Addon.db.global.HideWeapons) then
 		DressUpModel:UndressSlot(16);
+		Addon:SetButtonItem(16, nil);
+		
 		DressUpModel:UndressSlot(17);
+		Addon:SetButtonItem(17, nil);
 	end
 end
 
 function Addon:ResetItemButtons(setEquipment)
-	Addon:HideConditionalSlots();
+	DressUpFrameOutfitDropDown:SelectOutfit(nil, false);
 	
 	for slot, button in pairs(Addon.ItemButtons) do
-		local link = nil;
+		local itemlink = nil;
+		
 		if(setEquipment) then
 			local skip = false;
-			if(slot == 1 and not ShowingHelm()) then skip = true; end
-			if(slot == 15 and not ShowingCloak()) then skip = true; end
-			
 			if(slot == 19 and Addon.db.global.HideTabard) then skip = true; end
 			if((slot == 16 or slot == 17) and Addon.db.global.HideWeapons) then skip = true; end
 			
-			if(not skip) then
-				link = GetInventoryItemLink("player", slot)
+			if(not Addon:IsSlotHidden(slot) and not skip) then
+				itemlink = GetInventoryItemLink("player", slot)
 				
-				if(link and slot ~= 4 and slot ~= 19) then
-					local transmogged, _, _, _, _, visible_id = GetTransmogrifySlotInfo(slot);
-					if(transmogged) then
-						link = select(2, GetItemInfo(visible_id));
-					end
-					
-					if(link and slot == 16) then
-						local invtype = select(9, GetItemInfo(link));
-						if(invtype == "INVTYPE_RANGED" or invtype == "INVTYPE_RANGEDRIGHT") then
-							link = nil;
-							-- DressUpModel:TryOn(link);
-						end
+				if(itemlink) then
+					local isTransmogrified, hasPending, _, _, _, hasUndo, isHideVisual = C_Transmog.GetSlotInfo(slot, LE_TRANSMOG_TYPE_APPEARANCE);
+					local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = Addon:GetInfoForSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE)
+				
+					if(isTransmogrified and not isHideVisual) then
+						itemlink = Addon:GetItemLinkFromSource(appliedSourceID);
+					elseif(isHideVisual) then
+						itemlink = nil;
 					end
 				end
 			end
 		end
 		
-		Addon:SetButtonItem(slot, link);
+		Addon:SetButtonItem(slot, itemlink);
 	end
+	
+	Addon:HideConditionalSlots();
 end
 
 function Addon:ReapplyPreviewItems()
 	DressUpModel:Undress();
 	
-	for slot=1, 19 do
-		-- Hack to force item reset on model
-		local inventoryItem = GetInventoryItemLink("player", slot);
-		if(inventoryItem) then
-			DressUpModel:TryOn(inventoryItem);
-		end
-		
-		-- Refresh the actual preview items
-		local item = Addon:GetSlotItem(slot);
-		if(item) then
-			DressUpModel:TryOn(item);
-		else
-			DressUpModel:UndressSlot(slot);
+	for slot = 1, 19 do
+		if(Addon:IsSlotTransmogrifiable(slot)) then
+			-- Refresh the actual preview items
+			local item = Addon:GetSlotItem(slot);
+			if(item) then
+				DressUpModel:TryOn(item, INVENTORY_SLOT_NAMES[slot]);
+			else
+				DressUpModel:UndressSlot(slot);
+			end
 		end
 	end
-	
-	DressUpModel:UndressSlot(16);
-	DressUpModel:UndressSlot(17);
-	
-	local emptyMainhand = false;
-	local mhweapon = Addon:GetSlotItem(16);
-	if(mhweapon) then
-		DressUpModel:TryOn(mhweapon);
-	else
-		emptyMainhand = true;
-	end
-	
-	local ohweapon = Addon:GetSlotItem(17);
-	if(ohweapon) then
-		DressUpModel:TryOn(ohweapon);
-		
-		local _, _, _, _, _, _, _, _, itemEquipLoc = GetItemInfo(ohweapon);
-		if(emptyMainhand and itemEquipLoc ~= "INVTYPE_WEAPONOFFHAND") then
-			DressUpModel:TryOn(ohweapon);
-			DressUpModel:UndressSlot(16);
-		end
-	end
-end
-
-function DressUpHideTabardButton_OnClick(self)
-	DressUpModel:UndressSlot(19);
-	Addon:SetButtonItem(19, nil);
 end
 
 function DressUpHideArmorButton_OnClick(self)
@@ -782,61 +734,71 @@ function DressUpHideArmorButton_OnClick(self)
 	Addon:ResetItemButtons();
 end
 
-function Addon:InitializeDressUpFrame()
-	Addon:HookScript(DressUpFrameResetButton, "OnClick", function()
-		Addon:ResetItemButtons(true);
-		Addon.WeaponPreviewSlot = 0;
-		
-		Addon:ResetRaceSelect();
-	end);
+function Addon:IsSlotHidden(slot_id)
+	if(slot_id == 1 and not Addon:ShowingHelm()) then return true end
+	if(slot_id == 3 and not Addon:ShowingShoulders()) then return true end
+	if(slot_id == 15 and not Addon:ShowingCloak()) then return true end
+	return false;
 end
 
-function Addon:InitializePaperDoll()
-	Addon.PaperDollOpen = false;
+function Addon:ShowingHelm()
+	local _, _, _, _, _, _, isHideVisual = C_Transmog.GetSlotInfo(1, LE_TRANSMOG_TYPE_APPEARANCE);
+	return not isHideVisual;
+end
+
+function Addon:ShowingCloak()
+	local _, _, _, _, _, _, isHideVisual = C_Transmog.GetSlotInfo(15, LE_TRANSMOG_TYPE_APPEARANCE);
+	return not isHideVisual;
+end
+
+function Addon:ShowingShoulders()
+	local _, _, _, _, _, _, isHideVisual = C_Transmog.GetSlotInfo(3, LE_TRANSMOG_TYPE_APPEARANCE);
+	return not isHideVisual;
+end
+
+function Addon:GetItemSourceID(slot)
+	local slotID, slotName;
+	if(type(slot) == "string") then
+		slotID   = INVENTORY_SLOT_NAMES[slot];
+		slotName = slot;
+	else
+		slotID   = slot;
+		slotName = INVENTORY_SLOT_NAMES[slot];
+	end
 	
-	Addon:HookScript(PaperDollFrame, "OnShow", function()
-		Addon:PAPERDOLL_OPENED()
-	end);
+	return DressUpFrameOutfitDropDown:GetSlotSourceID(slotName, LE_TRANSMOG_TYPE_APPEARANCE);
+end
+
+function Addon:GetItemLinkFromSource(sourceID)
+	if(not sourceID) then return end
 	
-	Addon:HookScript(PaperDollFrame, "OnHide", function()
-		Addon:PAPERDOLL_CLOSED()
-	end);
+	local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+	return link;
 end
 
 function Addon:IsSlotTransmogrifiable(slot)
-	return slot ~= 4 and slot ~= 19 and slot ~= 2 and slot ~= 11 and slot ~= 12 and slot ~= 13 and slot ~= 14;
+	return slot ~= 2 and
+	       slot ~= 11 and
+	       slot ~= 12 and
+	       slot ~= 13 and
+	       slot ~= 14;
 end
 
-local _DressUpItemLink = DressUpItemLink;
-function DressUpItemLink(link)
-	if(not link or not IsDressableItem(link)) then
-		return false;
-	end
+function Addon:GetTransmogItemLinkFromSlot(slotID)
+	if(not slotID) then return end
 	
-	-- Convert itemstrings and item ids to actual links + other info
-	local _, link, _, _, _, itemType, itemSubType, _, itemEquipLoc = GetItemInfo(link);
+	local isTransmogrified, _, _, _, _, hasUndo, isHideVisual = C_Transmog.GetSlotInfo(slot, LE_TRANSMOG_TYPE_APPEARANCE);
+	if(not isTransmogrified or isHideVisual) then return nil end
 	
-	local slot = Addon:GetInvSlot(itemEquipLoc);
-	
-	if(IsShiftKeyDown() and Addon:IsSlotTransmogrifiable(slot)) then
-		local transmogSlot = slot;
-		
-		local applyTransmog = (link == GetInventoryItemLink("player", transmogSlot));
-		if(not applyTransmog and transmogSlot == 16 and link == GetInventoryItemLink("player", 17)) then
-			transmogSlot = 17;
-			applyTransmog = true;
-		end
-		
-		if(applyTransmog) then
-			local transmogged, _, _, _, _, visible_id = GetTransmogrifySlotInfo(transmogSlot);
-			if(transmogged) then
-				link = select(2, GetItemInfo(visible_id));
-			end
-		end
-	end
-	
-	if(not Addon.db.global.DisableSidePanel and SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown()) then
-		if(not SideDressUpFrame:IsShown() or SideDressUpFrame.mode ~= "player") then
+	local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = Addon:GetInfoForSlot(slotID, LE_TRANSMOG_TYPE_APPEARANCE);
+	return Addon:GetItemLinkFromSource(appliedSourceID);
+end
+
+-- Overwrite the blizz function
+local _DressUpVisual = DressUpVisual;
+function DressUpVisual(...)
+	if ( not Addon.db.global.DisableSidePanel and SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
+		if ( not SideDressUpFrame:IsShown() or SideDressUpFrame.mode ~= "player" ) then
 			SideDressUpFrame.mode = "player";
 			SideDressUpFrame.ResetButton:Show();
 
@@ -846,77 +808,47 @@ function DressUpItemLink(link)
 			ShowUIPanel(SideDressUpFrame);
 			SideDressUpModel:SetUnit("player");
 		end
-		SideDressUpModel:TryOn(link);
-		
-		return true;
-	elseif(not DressUpFrame:IsShown() or DressUpFrame.mode ~= "player") then
-		DressUpFrame.mode = "player";
-		DressUpFrame.ResetButton:Show();
-
-		local race, fileName = UnitRace("player");
-		SetDressUpBackground(DressUpFrame, fileName);
-
-		ShowUIPanel(DressUpFrame);
-		Addon:ResetRaceSelect();
-		
-		Addon:ResetItemButtons(true);
-	end
-	
-	DressUpModel:TryOn(link);
-	
-	if(slot ~= nil) then
-		local canDualWield, hasTitanGrip = Addon:CanPlayerDualWield();
-		
-		if(slot == 16) then
-			local cycle = false;
-			if(itemEquipLoc == "INVTYPE_WEAPONMAINHAND") then
-				Addon.WeaponPreviewSlot = 0;
-			elseif(itemEquipLoc == "INVTYPE_2HWEAPON") then
-				if(not hasTitanGrip) then
-					Addon.WeaponPreviewSlot = 0;
-					Addon:SetButtonItem(17, nil);
-				else
-					cycle = true;
-					-- if(Addon.WeaponPreviewSlot == 1) then
-					-- 	Addon:SetButtonItem(16, nil);
-					-- end
-				end
-			elseif(itemEquipLoc == "INVTYPE_RANGED" or itemEquipLoc == "INVTYPE_RANGEDRIGHT") then
-				Addon.WeaponPreviewSlot = 0;
-				Addon:SetButtonItem(17, nil);
-			else
-				cycle = true;
-			end
-			
-			slot = slot + Addon.WeaponPreviewSlot;
-			
-			if(cycle and canDualWield) then
-				Addon.WeaponPreviewSlot = (Addon.WeaponPreviewSlot + 1) % 2;
-			end
-		elseif(slot == 17) then
-			local currentItemLink, currentItemEquipLoc = Addon:GetSlotItem(16);
-			if(currentItemLink) then
-				currentItemEquipLoc = select(9, GetItemInfo(currentItemLink));
-			end
-			-- print(slot, link, currentItemLink, itemEquipLoc, currentItemEquipLoc);
-			
-			if(itemEquipLoc == "INVTYPE_WEAPONOFFHAND" or itemEquipLoc == "INVTYPE_HOLDABLE") then
-				Addon.WeaponPreviewSlot = 0;
-				
-				if(currentItemEquipLoc == "INVTYPE_2HWEAPON" or
-					currentItemEquipLoc == "INVTYPE_RANGED" or
-					currentItemEquipLoc == "INVTYPE_RANGEDRIGHT") then
-					Addon:SetButtonItem(16, nil);
-					Addon:SetButtonItem(17, nil);
-				end
-			end
+		SideDressUpModel:TryOn(...);
+	else
+		if(not DressUpFrame:IsShown()) then
+			DressUpFrame_Show();
 		end
-		
-		Addon:SetButtonItem(slot, link);
+		DressUpModel:TryOn(...);
+	end
+	return true;
+end
+
+function Addon:TryOn(displayID, previewSlot, enchantID)
+	if(not displayID) then return end
+	
+	local itemlink;
+	if(type(displayID) == "number") then
+		-- Get itemlink from source id
+		itemlink = Addon:GetItemLinkFromSource(displayID);
+	else
+		-- Display is probably link
+		itemlink = displayID;
 	end
 	
-	return true;
-	-- return _DressUpItemLink(link)
+	local _, _, _, _, _, itemType, itemSubType, _, itemEquipLoc = GetItemInfo(itemlink);
+	
+	local targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
+	if(not targetSlotID) then
+		targetSlotID = Addon:GetInvSlot(itemEquipLoc);
+	end
+	
+	-- Don't display hidden cloak
+	if(displayID == 77345) then return end
+	
+	Addon:SetButtonItem(targetSlotID, itemlink);
+	
+	if(not Addon.db.global.HideWeapons or targetSlotID == 16 or targetSlotID == 17) then
+		-- Update weapons separately since in case of dualwielding, blizz preview is all kinds of wonky
+		local mainhand = Addon:GetItemSourceID(16);
+		local offhand = Addon:GetItemSourceID(17);
+		Addon:SetButtonItem(16, Addon:GetItemLinkFromSource(mainhand));
+		Addon:SetButtonItem(17, Addon:GetItemLinkFromSource(offhand));
+	end
 end
 
 function Addon:GetInvSlot(equiploc)
@@ -933,8 +865,8 @@ function Addon:SetButtonItem(slot, itemlink)
 	end
 	
 	Addon.ItemButtons[slot].ItemLink = itemlink;
+	
 	if(texture) then
-		-- SetItemButtonTexture(Addon.ItemButtons[slot].Frame, texture);
 		Addon.ItemButtons[slot].Frame.icon:SetTexture(texture)
 		Addon.ItemButtons[slot].Frame.icon:Show();
 	else
@@ -959,47 +891,10 @@ function Addon:GetSlotItem(slot)
 	return nil;
 end
 
-function Addon:OnDisable()
-		
-end
-
 function Addon:PAPERDOLL_OPENED()
-	Addon.PaperDollOpen = true;
 	Addon:UpdatePaperDollItemLevels();
-	
-	Addon:UpdateItemToggleVisibility();
-end
-
-function Addon:PAPERDOLL_CLOSED()
-	Addon.PaperDollOpen = false;
 end
 
 function Addon:PLAYER_EQUIPMENT_CHANGED(event, slot, hasItem)
 	Addon:UpdatePaperDollItemLevels()
-	
-	if(not Addon.PaperDollOpen) then return end
-	
-	if(slot == 1) then
-		if(hasItem and not self.db.global.HideItemToggle) then
-			CharacterHeadSlotToggle:Show();
-		else
-			CharacterHeadSlotToggle:Hide();
-		end
-	end
-	
-	if(slot == 15) then
-		if(hasItem and not self.db.global.HideItemToggle) then
-			CharacterBackSlotToggle:Show();
-		else
-			CharacterBackSlotToggle:Hide();
-		end
-	end
-end
-
-function Addon:TRANSMOGRIFY_OPEN()
-	TransmogrifyModelFrame:UndressSlot(19);
-	
-	TransmogrifyFrame:SetSize(550, 500)
-	TransmogrifyArtFrame:SetSize(550, 500)
-	TransmogrifyModelFrame:SetSize(550, 465)
 end

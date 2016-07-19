@@ -8,7 +8,7 @@ DressUp adds buttons to display currently previewed items and allows you to hide
 
 The addon also extends the character info panel. Holding alt key while character info panel is open will display the item level of equipped items.
 
-=== Usage ===
+### Usage
 DressUp will automatically load when previewing items on your character. The few options you can change are found by clicking the cogwheel icon in the bottom left corner of the dressing room window.
 
 To change the background hold Control and scroll using mouse wheel while keeping mouse over the dressing room window. If you press middle mouse button while holding Control key the background will be changed to a featureless one.

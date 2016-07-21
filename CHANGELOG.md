@@ -1,3 +1,6 @@
+## 2.0.1
+* Fixed nil error when previewing saved outfits.
+
 ## 2.0.0
 * Updated for Legion:
   * Added support for the outfits and new outfit dropdown.

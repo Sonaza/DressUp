@@ -818,29 +818,31 @@ function DressUpVisual(...)
 	return true;
 end
 
-function Addon:TryOn(displayID, previewSlot, enchantID)
-	if(not displayID) then return end
+function Addon:TryOn(itemSource, previewSlot, enchantID)
+	if(not itemSource) then return end
 	
 	local itemlink;
-	if(type(displayID) == "number") then
+	if(type(itemSource) == "number") then
 		-- Get itemlink from source id
-		itemlink = Addon:GetItemLinkFromSource(displayID);
+		itemlink = Addon:GetItemLinkFromSource(itemSource);
 	else
 		-- Display is probably link
-		itemlink = displayID;
+		itemlink = itemSource;
 	end
 	
-	local _, _, _, _, _, itemType, itemSubType, _, itemEquipLoc = GetItemInfo(itemlink);
-	
-	local targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
-	if(not targetSlotID) then
-		targetSlotID = Addon:GetInvSlot(itemEquipLoc);
+	if(itemlink) then
+		local _, _, _, _, _, itemType, itemSubType, _, itemEquipLoc = GetItemInfo(itemlink);
+		
+		local targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
+		if(not targetSlotID) then
+			targetSlotID = Addon:GetInvSlot(itemEquipLoc);
+		end
+		
+		-- Don't display hidden cloak
+		if(itemSource == 77345) then return end
+		
+		Addon:SetButtonItem(targetSlotID, itemlink);
 	end
-	
-	-- Don't display hidden cloak
-	if(displayID == 77345) then return end
-	
-	Addon:SetButtonItem(targetSlotID, itemlink);
 	
 	if(not Addon.db.global.HideWeapons or targetSlotID == 16 or targetSlotID == 17) then
 		-- Update weapons separately since in case of dualwielding, blizz preview is all kinds of wonky

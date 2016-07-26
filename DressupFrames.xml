@@ -28,13 +28,13 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentOuterBorder" parentKey="outerBorder" file="Interface\AddOns\Dressup\Border">
+				<Texture name="$parentOuterBorder" parentKey="outerBorder" file="Interface\AddOns\Dressup\media\Border">
 					<Size x="49" y="49"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parent" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBorder" parentKey="border" file="Interface\AddOns\Dressup\Border" alphaMode="ADD">
+				<Texture name="$parentBorder" parentKey="border" file="Interface\AddOns\Dressup\media\Border" alphaMode="ADD">
 					<Size x="46" y="46"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parent" x="0" y="0"/>
@@ -210,7 +210,7 @@
 	
 	<CheckButton name="DressUpGenderButtonFemale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="1">
 		<Anchors>
-			<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="DressUpRaceDropdown" x="-26" y="-3"/>
+			<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="DressUpRaceDropdown" x="-26" y="-2"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>

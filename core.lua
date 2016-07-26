@@ -7,6 +7,22 @@ _G[ADDON_NAME] = Addon;
 
 local _;
 
+-- A bunch of evil trickery, sorry!
+BlizzDressUpFrame               = DressUpFrame;
+BlizzDressUpFrameOutfitDropDown = DressUpFrameOutfitDropDown
+BlizzDressUpFrameResetButton    = DressUpFrameResetButton
+BlizzDressUpModel               = DressUpModel
+BlizzDressUpFrameCancelButton   = DressUpFrameCancelButton
+
+DressUpFrame                    = CustomDressUpFrame;
+DressUpFrameOutfitDropDown      = CustomDressUpFrameOutfitDropDown;
+DressUpFrameResetButton         = CustomDressUpFrameResetButton;
+DressUpModel                    = CustomDressUpModel;
+DressUpFrameCancelButton        = CustomDressUpFrameCancelButton;
+
+tinsert(UISpecialFrames, "CustomDressUpFrame");
+UIPanelWindows["CustomDressUpFrame"] = { area = "left", pushable = 2 };
+
 local paperDollSlots = {
 	["CharacterHeadSlot"]			= 1,
 	["CharacterNeckSlot"]			= 2,
@@ -211,16 +227,30 @@ function Addon:OnInitialize()
 			
 			SaveCustomBackground = false,
 			CustomBackground = nil,
+			
+			Size = {
+				Width = 384,
+				Height = 474,	
+			},
 		},
 	};
 	
 	self.db = AceDB:New("DressupDB", defaults);
 end
 
-local DressUpModelOnEnter = DressUpModel:GetScript("OnEnter");
-local DressUpModelOnLeave = DressUpModel:GetScript("OnLeave");
+local DressUpModelOnEnter;
+local DressUpModelOnLeave;
 
 function Addon:OnEnable()
+	DressUpFrame:SetClampedToScreen(true);
+	DressUpFrame:SetMinResize(384, 474);
+	DressUpFrame:SetMaxResize(1000, 1000);
+	
+	DressUpFrame:SetSize(self.db.global.Size.Width, self.db.global.Size.Height);
+	
+	DressUpModelOnEnter = DressUpModel:GetScript("OnEnter");
+	DressUpModelOnLeave = DressUpModel:GetScript("OnLeave");
+
 	Addon:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	Addon:RegisterEvent("MODIFIER_STATE_CHANGED");
 	
@@ -277,10 +307,40 @@ end
 
 function Addon:ToggleBackgroundDim()
 	if(self.db.global.DimBackground) then
-		SetDressUpAlpha(0.6, 0.6, false);
+		-- SetDressUpAlpha(0.6, 0.6, false);
+		CustomDressUpBackground:SetVertexColor(0.4, 0.4, 0.4, 1.0);
 	else
-		SetDressUpAlpha(1.0, 1.0, false);
+		-- SetDressUpAlpha(1.0, 1.0, false);
+		CustomDressUpBackground:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 	end
+end
+
+function CustomDressUpFrameResize_OnEnter(self)
+	self.handle:SetTexCoord(0.5, 1, 0, 1);
+end
+
+function CustomDressUpFrameResize_OnLeave(self)
+	self.handle:SetTexCoord(0, 0.5, 0, 1);
+end
+
+function CustomDressUpFrameResize_OnUpdate(self, elapsed)
+	if(CustomDressUpFrame.sizing) then
+		Addon:UpdateBackgroundTexCoords();
+	end
+end
+
+function CustomDressUpFrameResize_OnMouseDown(self, button)
+	CustomDressUpFrame:StartSizing();
+	CustomDressUpFrame.sizing = true;
+end
+
+function CustomDressUpFrameResize_OnMouseUp(self, button)
+	CustomDressUpFrame:StopMovingOrSizing();
+	CustomDressUpFrame.sizing = false;
+	
+	local width, height = CustomDressUpFrame:GetSize();
+	Addon.db.global.Size.Width = width;
+	Addon.db.global.Size.Height = height;
 end
 
 function Addon:ToggleGizmo()
@@ -371,6 +431,37 @@ function DressupSettingsButton_OnClick(self)
 	DropDownList1:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
 end
 
+function Addon:SetDressUpBackground(frame, fileName)
+	fileName = fileName or "Orc";
+	frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-" .. fileName);
+	
+	Addon:UpdateBackgroundTexCoords();
+end
+
+function Addon:UpdateBackgroundTexCoords()
+	local width, height = CustomDressUpModel:GetSize();
+	local ratio = width / height;
+	local origRatio = 318.0 / 332.0;
+	
+	local x, y = 1, 1;
+	
+	if(ratio <= origRatio) then
+		x = ratio / origRatio;
+	else
+		y = origRatio / ratio;
+	end
+	
+	local ow = 0.62109375 / 2;
+	local oh = 0.6484375 / 2;
+	
+	CustomDressUpBackground:SetTexCoord(
+		math.max(ow - ow * x, 0),
+		math.min(ow + ow * x, 0.62109375),
+		math.max(oh - oh * y, 0),
+		math.min(oh + oh * y, 0.6484375)
+	);
+end
+
 function Addon:ResetRaceSelect()
 	local _, raceID = UnitRace("player");
 
@@ -392,7 +483,7 @@ function Addon:ResetRaceSelect()
 		Addon.CustomBackground = self.db.global.CustomBackground;
 		Addon:SetCustomBackground(self.db.global.CustomBackground);
 	else
-		SetDressUpBackground(DressUpFrame, raceID);
+		Addon:SetDressUpBackground(DressUpFrame, raceID);
 	end
 	
 	UIDropDownMenu_SetText(DressUpRaceDropdown, "Change Preview Race");
@@ -410,9 +501,9 @@ function Addon:SetCustomBackground(background_id)
 	if(not background_id) then return end
 	
 	if(background_id == 0) then
-		SetDressUpBackground(DressUpFrame, "Pet");
+		Addon:SetDressUpBackground(DressUpFrame, "Pet");
 	else
-		SetDressUpBackground(DressUpFrame, RACE_NAMES[RACE_IDS[Addon.CustomBackground]]);
+		Addon:SetDressUpBackground(DressUpFrame, RACE_NAMES[RACE_IDS[Addon.CustomBackground]]);
 	end
 end
 
@@ -496,7 +587,7 @@ function DressUpRaceDropdown_SelectOption(self)
 	
 	DressUpModel:SetCustomRace(self.value.id, Addon.SelectedGender);
 	if(Addon.CustomBackground == nil) then
-		SetDressUpBackground(DressUpFrame, RACE_NAMES[self.value.id]);
+		Addon:SetDressUpBackground(DressUpFrame, RACE_NAMES[self.value.id]);
 	end
 	
 	UIDropDownMenu_SetText(DressUpRaceDropdown, self.value.name);
@@ -555,8 +646,8 @@ function DressUpRaceDropdown_OnClick()
 end
 
 function Addon:InitializeRaceMenu()
-	DressUpFrameOutfitDropDown:ClearAllPoints();
-	DressUpFrameOutfitDropDown:SetPoint("BOTTOMLEFT", DressUpFrame, "BOTTOMLEFT", 29, 112);
+	-- DressUpFrameOutfitDropDown:ClearAllPoints();
+	-- DressUpFrameOutfitDropDown:SetPoint("BOTTOMLEFT", DressUpFrame, "BOTTOMLEFT", 29, 112);
 	
 	DressUpFrameOutfitDropDown:SetFrameStrata(DressUpModel:GetFrameStrata());
 	DressUpFrameOutfitDropDown:SetFrameLevel(DressUpModel:GetFrameLevel()+1);
@@ -803,7 +894,7 @@ function DressUpVisual(...)
 			SideDressUpFrame.ResetButton:Show();
 
 			local race, fileName = UnitRace("player");
-			SetDressUpBackground(SideDressUpFrame, fileName);
+			Addon:SetDressUpBackground(SideDressUpFrame, fileName);
 
 			ShowUIPanel(SideDressUpFrame);
 			SideDressUpModel:SetUnit("player");
@@ -830,10 +921,11 @@ function Addon:TryOn(itemSource, previewSlot, enchantID)
 		itemlink = itemSource;
 	end
 	
+	local targetSlotID;
 	if(itemlink) then
 		local _, _, _, _, _, itemType, itemSubType, _, itemEquipLoc = GetItemInfo(itemlink);
 		
-		local targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
+		targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
 		if(not targetSlotID) then
 			targetSlotID = Addon:GetInvSlot(itemEquipLoc);
 		end

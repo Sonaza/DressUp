@@ -58,7 +58,7 @@
 	
 	<Button name="DressupPreviewButtonHead" inherits="DressupPreviewItemButtonTemplate" id="1">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="DressUpFrame" relativePoint="TOPLEFT" x="18" y="-95"/>
+			<Anchor point="TOPLEFT" relativeTo="DressUpFrame" relativePoint="LEFT" x="12" y="134"/>
 		</Anchors>
 	</Button>
 	<Button name="DressupPreviewButtonShoulder" inherits="DressupPreviewItemButtonTemplate" id="3">
@@ -94,7 +94,7 @@
 	
 	<Button name="DressupPreviewButtonHands" inherits="DressupPreviewItemButtonTemplate" id="10">
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-42" y="-95"/>
+			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="RIGHT" x="-12" y="134"/>
 		</Anchors>
 	</Button>
 	<Button name="DressupPreviewButtonWaist" inherits="DressupPreviewItemButtonTemplate" id="6">
@@ -177,7 +177,7 @@
 	
 	<Button name="DressupSettingsButton" inherits="DressupSettingsButtonTemplate" parent="DressUpFrame" id="1">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="14" y="74"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="3" y="0"/>
 		</Anchors>
 	</Button>
 	<Button name="DressupCharacterPanelSettingsButton" inherits="DressupSettingsButtonTemplate" parent="PaperDollFrame" id="2">
@@ -204,13 +204,13 @@
 		</KeyValues>
 		<Size x="140" y="24"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-28" y="-40"/>
+			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="3" y="-29"/>
 		</Anchors>
 	</Frame>
 	
-	<CheckButton name="DressUpGenderButtonMale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="0">
+	<CheckButton name="DressUpGenderButtonFemale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="1">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="DressUpFrame" x="73" y="-41"/>
+			<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="DressUpRaceDropdown" x="-26" y="-3"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -218,16 +218,15 @@
 				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 			</OnLoad>
 			<OnShow>
-				-- self:SetChecked(ShowingHelm());
-				_G[self:GetName() .. "Text"]:SetText("Male");
+				_G[self:GetName() .. "Text"]:SetText("Female");
 			</OnShow>
 			<OnClick function="DressUpGenderButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
 	
-	<CheckButton name="DressUpGenderButtonFemale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="1">
+	<CheckButton name="DressUpGenderButtonMale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="0">
 		<Anchors>
-			<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="DressUpGenderButtonMale" x="23" y="0"/>
+			<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="DressUpGenderButtonFemale" x="-30" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -235,8 +234,7 @@
 				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 			</OnLoad>
 			<OnShow>
-				-- self:SetChecked(ShowingHelm());
-				_G[self:GetName() .. "Text"]:SetText("Female");
+				_G[self:GetName() .. "Text"]:SetText("Male");
 			</OnShow>
 			<OnClick function="DressUpGenderButton_OnClick"/>
 		</Scripts>

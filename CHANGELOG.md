@@ -1,3 +1,9 @@
+## 2.1.0
+* Fixed bug introduced by the previous fix causing weapon slots not to be updated properly.
+* Dressing room window is now resizable.
+	* But for a price (from the development standpoint). DressUp now has to overwrite Blizzard dressing room frames with its own which may cause conflicts with other addons that may tweak the default Blizzard frames.
+	* Following frames are overwritten: DressUpFrame, DressUpFrameOutfitDropDown, DressUpFrameResetButton, DressUpModel, DressUpFrameCancelButton. Old frames are still accessible by prefixing frame name with "Blizz" e.g. BlizzDressUpFrame.
+
 ## 2.0.1
 * Fixed nil error when previewing saved outfits.
 

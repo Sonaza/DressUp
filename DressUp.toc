@@ -2,7 +2,7 @@
 ## Title: DressUp
 ## Notes: Additional options for default Dressup Frame
 ## Author: Sonaza
-## Version: 2.0.1
+## Version: 2.1.0
 ## SavedVariables: DressupDB
 ## OptionalDeps: Ace3
 
@@ -14,6 +14,8 @@ libs\AceDB-3.0\AceDB-3.0.xml
 libs\AceEvent-3.0\AceEvent-3.0.xml
 libs\AceHook-3.0\AceHook-3.0.xml
 #@end-no-lib-strip@
+
+CustomDressUpFrame.xml
 
 core.lua
 DressupFrames.xml

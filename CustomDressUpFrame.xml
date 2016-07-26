@@ -1,0 +1,144 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Frame name="CustomDressUpFrame" toplevel="true" enableMouse="true" movable="true" resizable="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="384" y="474"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="512" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				 <FontString name="CustomDressUpFrameTitleText" inherits="GameFontHighlight" text="DRESSUP_FRAME">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CustomDressUpFrame" relativePoint="TOP" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="background" name="CustomDressUpBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="9" y="-66"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-9" y="29"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="shadow" file="Interface\AddOns\DressUp\media\Background-Shadow">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="9" y="-66"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-9" y="29"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.5"/>
+					<TexCoords left="0" right="0.62109375" top="0" bottom="0.6484375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="OutfitDropDown" name="$parentOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="DressUpOutfitMixin">
+				<KeyValues>
+					<KeyValue key="width" value="163" type="number"/>
+					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
+					<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="CustomDressUpModel" x="-40" y="40"/>
+				</Anchors>
+			</Frame>
+			<Button name="CustomDressUpFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="HideParentPanel"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ResetButton" name="CustomDressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CustomDressUpFrameCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CustomDressUpModel:Dress();
+						PlaySound("gsTitleOptionOK");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<DressUpModel name="CustomDressUpModel" scale="2.0" inherits="ModelWithControlsTemplate">
+				<Size>
+					<AbsDimension x="316" y="331"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="8" y="-66"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-8" y="29"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
+					</OnLoad>
+					<OnDressModel function="DressUpFrame_OnDressModel"/>
+				</Scripts>
+			</DressUpModel>
+			<Button name="$parentResize" enableMouse="true">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-2" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="handle" file="Interface\AddOns\DressUp\media\resize-handle" setAllPoints="true">
+							<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						CustomDressUpFrameResize_OnEnter(self);
+					</OnEnter>
+					<OnLeave>
+						CustomDressUpFrameResize_OnLeave(self);
+					</OnLeave>
+					<OnUpdate>
+						CustomDressUpFrameResize_OnUpdate(self, elapsed);
+					</OnUpdate>
+					<OnMouseDown>
+						CustomDressUpFrameResize_OnMouseDown(self, button);
+					</OnMouseDown>
+					<OnMouseUp>
+						CustomDressUpFrameResize_OnMouseUp(self, button);
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				SetPortraitTexture(CustomDressUpFramePortrait, "player");
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+
+</Ui>

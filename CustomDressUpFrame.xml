@@ -128,6 +128,50 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
+			<Frame parentKey="ResizeAlert" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentResize" relativePoint="RIGHT" x="21" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="You can now resize the dressing room window by dragging here.">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								CustomDressUpFrameResizeAlertCloseButton_OnClick(self);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="34" y="16"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SetClampedTextureRotation(self.Arrow.Arrow, 90);
+						SetClampedTextureRotation(self.Arrow.Glow, 90);
+						self.Arrow.Glow:Hide();
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight()+42);
+					</OnShow>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnShow>

@@ -1,3 +1,8 @@
+## 2.1.1
+* Added help info about proper updating of addon.
+* Added hint to emphasize the new resize feature.
+* Aligned interface elements around slightly.
+
 ## 2.1.0
 * Fixed bug introduced by the previous fix causing weapon slots not to be updated properly.
 * Dressing room window is now resizable.

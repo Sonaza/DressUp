@@ -177,7 +177,7 @@
 	
 	<Button name="DressupSettingsButton" inherits="DressupSettingsButtonTemplate" parent="DressUpFrame" id="1">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="3" y="0"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="2" y="-2"/>
 		</Anchors>
 	</Button>
 	<Button name="DressupCharacterPanelSettingsButton" inherits="DressupSettingsButtonTemplate" parent="PaperDollFrame" id="2">

@@ -7,18 +7,22 @@ _G[ADDON_NAME] = Addon;
 
 local _;
 
+if(not CustomDressUpFrame) then
+	error("You have updated the addon but only reloaded the interface. Please restart the game.", 1);
+end
+
 -- A bunch of evil trickery, sorry!
 BlizzDressUpFrame               = DressUpFrame;
-BlizzDressUpFrameOutfitDropDown = DressUpFrameOutfitDropDown
-BlizzDressUpFrameResetButton    = DressUpFrameResetButton
-BlizzDressUpModel               = DressUpModel
-BlizzDressUpFrameCancelButton   = DressUpFrameCancelButton
+BlizzDressUpModel               = DressUpModel;
+BlizzDressUpFrameResetButton    = DressUpFrameResetButton;
+BlizzDressUpFrameCancelButton   = DressUpFrameCancelButton;
+BlizzDressUpFrameOutfitDropDown = DressUpFrameOutfitDropDown;
 
 DressUpFrame                    = CustomDressUpFrame;
-DressUpFrameOutfitDropDown      = CustomDressUpFrameOutfitDropDown;
-DressUpFrameResetButton         = CustomDressUpFrameResetButton;
 DressUpModel                    = CustomDressUpModel;
+DressUpFrameResetButton         = CustomDressUpFrameResetButton;
 DressUpFrameCancelButton        = CustomDressUpFrameCancelButton;
+DressUpFrameOutfitDropDown      = CustomDressUpFrameOutfitDropDown;
 
 tinsert(UISpecialFrames, "CustomDressUpFrame");
 UIPanelWindows["CustomDressUpFrame"] = { area = "left", pushable = 2 };
@@ -228,6 +232,8 @@ function Addon:OnInitialize()
 			SaveCustomBackground = false,
 			CustomBackground = nil,
 			
+			ResizeAlertShown = false;
+			
 			Size = {
 				Width = 384,
 				Height = 474,	
@@ -236,6 +242,14 @@ function Addon:OnInitialize()
 	};
 	
 	self.db = AceDB:New("DressupDB", defaults);
+	
+	if(not Addon.db.global.ResizeAlertShown) then
+		CustomDressUpFrame.ResizeAlert:Show();
+	end
+end
+
+function CustomDressUpFrameResizeAlertCloseButton_OnClick(self)
+	Addon.db.global.ResizeAlertShown = true;
 end
 
 local DressUpModelOnEnter;

@@ -1,0 +1,2 @@
+Distributed under fair use these DressUpFrame backgrounds belong to Blizzard Entertainment.
+These modified (combined) background files are used by the addon to provide a scalable background image within World of Warcraft.

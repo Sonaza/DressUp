@@ -275,7 +275,6 @@ function Addon:OnEnable()
 	
 	Addon:InitializeRaceMenu();
 	
-	Addon:ToggleBackgroundDim();
 	Addon:ToggleGizmo();
 	
 	-- Initialize hooks
@@ -317,16 +316,6 @@ function Addon:OnEnable()
 	hooksecurefunc(DressUpModel, "Dress", function()
 		Addon:HideConditionalSlots();
 	end);
-end
-
-function Addon:ToggleBackgroundDim()
-	if(self.db.global.DimBackground) then
-		-- SetDressUpAlpha(0.6, 0.6, false);
-		CustomDressUpBackground:SetVertexColor(0.4, 0.4, 0.4, 1.0);
-	else
-		-- SetDressUpAlpha(1.0, 1.0, false);
-		CustomDressUpBackground:SetVertexColor(1.0, 1.0, 1.0, 1.0);
-	end
 end
 
 function CustomDressUpFrameResize_OnEnter(self)
@@ -382,12 +371,6 @@ function DressupSettingsButton_OnClick(self)
 			text = "DressUp Options", isTitle = true, notCheckable = true,
 		},
 		{
-			text = "Dim the preview background",
-			func = function() Addon.db.global.DimBackground = not Addon.db.global.DimBackground; Addon:ToggleBackgroundDim(); end,
-			checked = function() return Addon.db.global.DimBackground end,
-			isNotRadio = true,
-		},
-		{
 			text = "Save custom background",
 			func = function()
 				Addon.db.global.SaveCustomBackground = not Addon.db.global.SaveCustomBackground;
@@ -425,6 +408,12 @@ function DressupSettingsButton_OnClick(self)
 			isNotRadio = true,
 		},
 		{
+			text = "Always hide shirt",
+			func = function() Addon.db.global.HideShirt = not Addon.db.global.HideShirt; end,
+			checked = function() return Addon.db.global.HideShirt end,
+			isNotRadio = true,
+		},
+		{
 			text = " ", isTitle = true, notCheckable = true,
 		},
 		{
@@ -447,7 +436,12 @@ end
 
 function Addon:SetDressUpBackground(frame, fileName)
 	fileName = fileName or "Orc";
-	frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-" .. fileName);
+	if(fileName == "Scourge") then fileName = "Undead" end
+	if(fileName == "Pet") then
+		frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-Pet");
+	else
+		frame.background:SetTexture("Interface\\Transmogrify\\TransmogBackground" .. fileName);
+	end
 	
 	Addon:UpdateBackgroundTexCoords();
 end
@@ -455,7 +449,17 @@ end
 function Addon:UpdateBackgroundTexCoords()
 	local width, height = CustomDressUpModel:GetSize();
 	local ratio = width / height;
-	local origRatio = 318.0 / 332.0;
+	
+	-- local left = 0.62109375;
+	-- local right = 0.6484375;
+	
+	local left = 0.578125;
+	local right = 0.96875;
+	
+	local origRatio = left / right;
+	
+	local ow = left / 2;
+	local oh = right / 2;
 	
 	local x, y = 1, 1;
 	
@@ -465,14 +469,11 @@ function Addon:UpdateBackgroundTexCoords()
 		y = origRatio / ratio;
 	end
 	
-	local ow = 0.62109375 / 2;
-	local oh = 0.6484375 / 2;
-	
 	CustomDressUpBackground:SetTexCoord(
 		math.max(ow - ow * x, 0),
-		math.min(ow + ow * x, 0.62109375),
+		math.min(ow + ow * x, left),
 		math.max(oh - oh * y, 0),
-		math.min(oh + oh * y, 0.6484375)
+		math.min(oh + oh * y, right)
 	);
 end
 

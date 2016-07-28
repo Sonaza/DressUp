@@ -1,6 +1,5 @@
 ## 2.1.2
 * Switched background images to use Blizzard Transmogrify textures so that the addon doesn't have to distribute Blizzard assets.
-* Since the new background images are dimmer by default, the option to dim the background is removed.
 * Added option to always hide shirt.
 
 ## 2.1.1

@@ -210,7 +210,7 @@
 	
 	<CheckButton name="DressUpGenderButtonFemale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="1">
 		<Anchors>
-			<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="DressUpRaceDropdown" x="-26" y="-2"/>
+			<Anchor point="RIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="-210" y="-45"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>

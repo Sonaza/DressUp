@@ -1,6 +1,7 @@
 ## 2.1.2
 * Switched background images to use Blizzard Transmogrify textures so that the addon doesn't have to distribute Blizzard assets.
 * Added option to always hide shirt.
+* Other minor tweaks.
 
 ## 2.1.1
 * Added help info about proper updating of addon.

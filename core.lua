@@ -321,10 +321,12 @@ end
 
 function CustomDressUpFrameResize_OnEnter(self)
 	self.handle:SetTexCoord(0.5, 1, 0, 1);
+	SetCursor("Interface\\Cursor\\UI-Cursor-SizeRight");
 end
 
 function CustomDressUpFrameResize_OnLeave(self)
 	self.handle:SetTexCoord(0, 0.5, 0, 1);
+	SetCursor(nil);
 end
 
 function CustomDressUpFrameResize_OnUpdate(self, elapsed)

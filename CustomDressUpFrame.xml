@@ -27,12 +27,6 @@
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-9" y="29"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="backgroundAdd" name="CustomDressUpBackgroundAdd" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="9" y="-66"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-9" y="29"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="shadow" file="Interface\AddOns\DressUp\media\Background-Shadow">

@@ -448,14 +448,7 @@ end
 
 function Addon:SetDressUpBackground(frame, fileName)
 	fileName = fileName or "Orc";
-	if(fileName == "Scourge") then fileName = "Undead" end
-	if(fileName == "Pet") then
-		frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-Pet");
-		frame.backgroundAdd:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-Pet");
-	else
-		frame.background:SetTexture("Interface\\Transmogrify\\TransmogBackground" .. fileName);
-		frame.backgroundAdd:SetTexture("Interface\\Transmogrify\\TransmogBackground" .. fileName);
-	end
+	frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-" .. fileName);
 	
 	Addon:UpdateBackgroundTexCoords();
 	Addon:UpdateBackgroundDim();
@@ -465,8 +458,10 @@ function Addon:UpdateBackgroundTexCoords()
 	local width, height = CustomDressUpModel:GetSize();
 	local ratio = width / height;
 	
-	local left = 0.578125;
-	local right = 0.96875;
+	-- local left = 0.578125;
+	-- local right = 0.96875;
+	local left = 0.62109375;
+	local right = 0.6484375;
 	local origRatio = left / right;
 	
 	local ow = left / 2;
@@ -486,14 +481,13 @@ function Addon:UpdateBackgroundTexCoords()
 	                   math.min(oh + oh * y, right);
 	
 	CustomDressUpBackground:SetTexCoord(l, r, t, b);
-	CustomDressUpBackgroundAdd:SetTexCoord(l, r, t, b);
 end
 
 function Addon:UpdateBackgroundDim()
 	if(self.db.global.DimBackground) then
-		CustomDressUpBackgroundAdd:Hide();
+		CustomDressUpBackground:SetVertexColor(0.52, 0.52, 0.52);
 	else
-		CustomDressUpBackgroundAdd:Show();
+		CustomDressUpBackground:SetVertexColor(1.0, 1.0, 1.0);
 	end
 end
 

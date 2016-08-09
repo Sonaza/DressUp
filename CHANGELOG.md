@@ -1,3 +1,6 @@
+## 2.1.4
+* Fixed error with side panel background.
+
 ## 2.1.3
 * Revert the background change (again) and reinclude the Blizzard assets.
 

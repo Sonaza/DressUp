@@ -2,7 +2,7 @@
 ## Title: DressUp
 ## Notes: Additional options for default Dressup Frame
 ## Author: Sonaza
-## Version: 2.1.3
+## Version: 2.1.4
 ## SavedVariables: DressupDB
 ## OptionalDeps: Ace3
 

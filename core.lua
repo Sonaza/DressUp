@@ -929,7 +929,7 @@ function DressUpVisual(...)
 			SideDressUpFrame.ResetButton:Show();
 
 			local race, fileName = UnitRace("player");
-			Addon:SetDressUpBackground(SideDressUpFrame, fileName);
+			SetDressUpBackground(SideDressUpFrame, fileName);
 
 			ShowUIPanel(SideDressUpFrame);
 			SideDressUpModel:SetUnit("player");

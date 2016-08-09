@@ -1,4 +1,6 @@
 ## 2.1.4
+* Added option to keep item levels permanently visible.
+* Colorizing item levels by range. Lowest item levels are colored orange while higher end blue. Colorizing can be disabled in the options.
 * Fixed error with side panel background.
 
 ## 2.1.3

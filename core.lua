@@ -193,27 +193,91 @@ function Addon:GetRealItemLevel(itemLink)
 	return itemLevel, itemLevel;
 end
 
+local ILVL_MIN_COLOR = {255, 191, 116};
+local ILVL_MAX_COLOR = {147, 231, 255};
+local ILVL_COLOR_DIFF = {
+	ILVL_MAX_COLOR[1] - ILVL_MIN_COLOR[1],
+	ILVL_MAX_COLOR[2] - ILVL_MIN_COLOR[2],
+	ILVL_MAX_COLOR[3] - ILVL_MIN_COLOR[3],
+};
+
+function Addon:GetRangeColor(value, minvalue, maxvalue)
+	if(not value) then return "ffffff" end
+	
+	local progress = (value - minvalue) / (maxvalue - minvalue);
+	return string.format("%02x%02x%02x",
+		ILVL_MIN_COLOR[1] + ILVL_COLOR_DIFF[1] * progress,
+		ILVL_MIN_COLOR[2] + ILVL_COLOR_DIFF[2] * progress,
+		ILVL_MIN_COLOR[3] + ILVL_COLOR_DIFF[3] * progress
+	);
+end
+
 function Addon:UpdatePaperDollItemLevels()
+	local itemlevels = {};
+	
+	local lowest = 999999;
+	local highest = 0;
+	
 	for slotName, slotId in pairs(paperDollSlots) do
-		local frame = _G[slotName .. "ItemLevel"];
 		local link = GetInventoryItemLink("player", slotId);
 		if(link) then
 			local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
-			frame.value:SetText(itemLevel);
+			itemlevels[slotId] = itemLevel;
+			
+			lowest = math.min(lowest, itemLevel);
+			highest = math.max(highest, itemLevel);
+		end
+	end
+	
+	for slotName, slotId in pairs(paperDollSlots) do
+		local frame = _G[slotName .. "ItemLevel"];
+		local itemLevel = itemlevels[slotId];
+		if(itemLevel) then
+			if(self.db.global.ColorizedItemLevels) then
+				frame.value:SetText(("|cff%s%d|r"):format(Addon:GetRangeColor(itemLevel, lowest, highest), itemLevel));
+			else
+				frame.value:SetText(("%d"):format(itemLevel));
+			end
 		else
 			frame.value:SetText("");
 		end
 	end
 end
 
-function Addon:MODIFIER_STATE_CHANGED()
+function Addon:ShowItemLevels()
 	for slotName, slotId in pairs(paperDollSlots) do
 		local frame = _G[slotName .. "ItemLevel"];
-		
-		if(IsAltKeyDown() and not self.db.global.HideItemLevel) then
-			frame:Show();
+		frame:Show();
+	end
+end
+
+function Addon:HideItemLevels()
+	for slotName, slotId in pairs(paperDollSlots) do
+		local frame = _G[slotName .. "ItemLevel"];
+		frame:Hide();
+	end
+end
+
+local ITEMLEVEL_VISIBILITY_HIDE  = 0;
+local ITEMLEVEL_VISIBILITY_ONALT = 1;
+local ITEMLEVEL_VISIBILITY_SHOW  = 2;
+
+function Addon:MODIFIER_STATE_CHANGED()
+	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_HIDE) then
+		Addon:HideItemLevels();
+		return;
+	end
+	
+	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_SHOW) then
+		Addon:ShowItemLevels();
+		return;
+	end
+	
+	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_ONALT) then
+		if(IsAltKeyDown()) then
+			Addon:ShowItemLevels();
 		else
-			frame:Hide();
+			Addon:HideItemLevels();
 		end
 	end
 end
@@ -224,7 +288,9 @@ function Addon:OnInitialize()
 			DimBackground = true,
 			HideGizmo = true,
 			DisableSidePanel = true,
-			HideItemLevel = false,
+			
+			ItemLevelVisibility = ITEMLEVEL_VISIBILITY_ONALT,
+			ColorizedItemLevels = true,
 			
 			HideTabard = false,
 			HideWeapons = false,
@@ -237,12 +303,23 @@ function Addon:OnInitialize()
 			
 			Size = {
 				Width = 384,
-				Height = 474,	
+				Height = 474,
 			},
 		},
 	};
 	
 	self.db = AceDB:New("DressupDB", defaults);
+	
+	if(self.db.global.HideItemLevel == true) then
+		self.db.global.ItemLevelVisibility = ITEMLEVEL_VISIBILITY_HIDE;
+		self.db.global.HideItemLevel = nil;
+	end
+	
+	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_SHOW) then
+		Addon:ShowItemLevels();
+	elseif(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_HIDE) then
+		Addon:HideItemLevels();
+	end
 	
 	if(not Addon.db.global.ResizeAlertShown) then
 		CustomDressUpFrame.ResizeAlert:Show();
@@ -432,9 +509,36 @@ function DressupSettingsButton_OnClick(self)
 			text = "Character Panel", isTitle = true, notCheckable = true,
 		},
 		{
-			text = "Hide item levels",
-			func = function() Addon.db.global.HideItemLevel = not Addon.db.global.HideItemLevel; end,
-			checked = function() return Addon.db.global.HideItemLevel end,
+			text = "Always hide item levels",
+			func = function()
+				Addon.db.global.ItemLevelVisibility = ITEMLEVEL_VISIBILITY_HIDE;
+				Addon:HideItemLevels();
+			end,
+			checked = function() return Addon.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_HIDE  end,
+		},
+		{
+			text = "Show item level when holding alt",
+			func = function()
+				Addon.db.global.ItemLevelVisibility = ITEMLEVEL_VISIBILITY_ONALT;
+				Addon:MODIFIER_STATE_CHANGED();
+			end,
+			checked = function() return Addon.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_ONALT  end,
+		},
+		{
+			text = "Always show item levels",
+			func = function()
+				Addon.db.global.ItemLevelVisibility = ITEMLEVEL_VISIBILITY_SHOW;
+				Addon:ShowItemLevels();
+			end,
+			checked = function() return Addon.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_SHOW end,
+		},
+		{
+			text = "Colorize item level numbers",
+			func = function()
+				Addon.db.global.ColorizedItemLevels = not Addon.db.global.ColorizedItemLevels;
+				Addon:UpdatePaperDollItemLevels()
+			end,
+			checked = function() return Addon.db.global.ColorizedItemLevels end,
 			isNotRadio = true,
 		},
 	};

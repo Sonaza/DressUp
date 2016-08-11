@@ -1,3 +1,9 @@
+------------------------------------------------------------
+-- DressUp by Sonaza
+-- All rights reserved
+-- http://sonaza.com
+------------------------------------------------------------
+
 local ADDON_NAME, SHARED_DATA = ...;
 
 local LibStub = LibStub;
@@ -204,7 +210,7 @@ local ILVL_COLOR_DIFF = {
 function Addon:GetRangeColor(value, minvalue, maxvalue)
 	if(not value) then return "ffffff" end
 	
-	local progress = (value - minvalue) / (maxvalue - minvalue);
+	local progress = (value - minvalue) / math.max(1, maxvalue - minvalue);
 	return string.format("%02x%02x%02x",
 		ILVL_MIN_COLOR[1] + ILVL_COLOR_DIFF[1] * progress,
 		ILVL_MIN_COLOR[2] + ILVL_COLOR_DIFF[2] * progress,
@@ -222,10 +228,11 @@ function Addon:UpdatePaperDollItemLevels()
 		local link = GetInventoryItemLink("player", slotId);
 		if(link) then
 			local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
-			itemlevels[slotId] = itemLevel;
-			
-			lowest = math.min(lowest, itemLevel);
-			highest = math.max(highest, itemLevel);
+			if(itemLevel) then
+				itemlevels[slotId] = itemLevel;
+				lowest = math.min(lowest, itemLevel or 1);
+				highest = math.max(highest, itemLevel or 1);
+			end
 		end
 	end
 	

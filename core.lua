@@ -228,9 +228,11 @@ function Addon:UpdatePaperDollItemLevels()
 		local realSlotId = slotId;
 		if(realSlotId == 17) then
 			local link = GetInventoryItemLink("player", realSlotId);
-			local _, _, quality = GetItemInfo(link);
-			if(quality == 6) then
-				slotId = 16;
+			if(link) then
+				local _, _, quality = GetItemInfo(link);
+				if(quality == 6) then
+					slotId = 16;
+				end
 			end
 		end
 		

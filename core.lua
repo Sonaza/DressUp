@@ -225,11 +225,20 @@ function Addon:UpdatePaperDollItemLevels()
 	local highest = 0;
 	
 	for slotName, slotId in pairs(paperDollSlots) do
+		local realSlotId = slotId;
+		if(realSlotId == 17) then
+			local link = GetInventoryItemLink("player", realSlotId);
+			local _, _, quality = GetItemInfo(link);
+			if(quality == 6) then
+				slotId = 16;
+			end
+		end
+		
 		local link = GetInventoryItemLink("player", slotId);
 		if(link) then
 			local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
 			if(itemLevel) then
-				itemlevels[slotId] = itemLevel;
+				itemlevels[realSlotId] = itemLevel;
 				lowest = math.min(lowest, itemLevel or 1);
 				highest = math.max(highest, itemLevel or 1);
 			end

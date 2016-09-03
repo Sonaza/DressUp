@@ -1,3 +1,6 @@
+## 2.1.6
+* Fixed offhand item level number when using artifact weapons.
+
 ## 2.1.5
 * Fixed error with item level updating.
 

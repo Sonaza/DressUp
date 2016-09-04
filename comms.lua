@@ -99,6 +99,26 @@ StaticPopupDialogs["DRESSUP_ASK_WHISPER_TARGET"] = {
 	hideOnEscape = 1,
 };
 
+function Addon:CheckValidRecipientRealm(recipient)
+	local name, realm = strsplit("-", recipient);
+	
+	-- If no realm then it's assumed it is current realm and thus is valid
+	if(not realm) then
+		return true;
+	end
+	
+	realm = string.gsub(realm, " ", "");
+	
+	local connectedRealms = Addon:GetConnectedRealms();
+	for _, connectedRealm in ipairs(connectedRealms) do
+		if(string.lower(realm) == string.lower(connectedRealm)) then
+			return true;
+		end
+	end
+	
+	return false;
+end
+
 function Addon:InitializeComms()
 	Addon:RegisterEvent("CHAT_MSG_ADDON");
 	Addon:RegisterEvent("CHAT_MSG_SYSTEM");
@@ -172,7 +192,16 @@ function HandleModifiedItemClick(link, ...)
 	return OriginalHandleModifiedItemClick(link, ...);
 end
 
-local ERR_CHAT_PLAYER_NOT_FOUND_PATTERN = string.gsub(ERR_CHAT_PLAYER_NOT_FOUND_S, "%%s", "(%%a+)");
+function Addon:GetConnectedRealms()
+	local realms = GetAutoCompleteRealms();
+	if(realms) then
+		return realms;
+	end
+	
+	return { GetRealmName() };
+end
+
+local ERR_CHAT_PLAYER_NOT_FOUND_PATTERN = string.gsub(ERR_CHAT_PLAYER_NOT_FOUND_S, "%%s", "(.+)");
 function Addon:CHAT_MSG_SYSTEM(event, msg)
 	local playerName = string.match(msg, ERR_CHAT_PLAYER_NOT_FOUND_PATTERN);
 	if(playerName) then
@@ -267,6 +296,12 @@ function DressUpFrameWhisperButton_OnClick(self)
 end
 
 function Addon:SendPreviewedItems(target)
+	local validRecipient = Addon:CheckValidRecipientRealm(target);
+	if(not validRecipient) then
+		Addon:AddMessage("%s is not a valid recipient. Previews cannot be sent to unconnected realms.", target);
+		return;
+	end
+
 	-- Check for target version first
 	Addon:PokeForVersion(target,
 	{

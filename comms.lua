@@ -173,13 +173,13 @@ function DressUpFrameWhisperButton_OnClick(self)
 	GameTooltip:Hide();
 end
 
--- /run DressUp:SendPreviewedItems("Sonaza")
 function Addon:SendPreviewedItems(target)
 	-- Check for target version first
 	Addon:PokeForVersion(target,
 	{
 		onReply = function(payload, sender)
 			Addon:DoSendPreviewedItems(target);
+			Addon:AddMessage("Sent currently previewed items to %s.", target);
 		end,
 		onTimeout = function()
 			ShouldHideWhisperTo = target;
@@ -188,12 +188,11 @@ function Addon:SendPreviewedItems(target)
 				         "Get the addon from http://wow.curseforge.com/addons/dressup/"):format(UnitName("player"));
 			SendChatMessage(msg, "WHISPER", nil, target);
 			
-			Addon:AddMessage("%s doesn't have DressUp or it is outdated. They were notified of it.", target)
+			Addon:AddMessage("%s doesn't have DressUp or it is outdated. They were notified of it.", target);
 		end,
 	});
 end
 
--- /run DressUp:PokeForVersion("Eleanoure")
 function Addon:PokeForVersion(target, callbacks)
 	Addon:SendAddonMessage(target, {
 		tag = MESSAGE_TYPES.QUERY_VERSION

@@ -364,6 +364,12 @@ end
 local DressUpModelOnEnter;
 local DressUpModelOnLeave;
 
+SLASH_DRESSUP1	= "/dressup";
+SLASH_DRESSUP2	= "/dressingroom";
+SlashCmdList["DRESSUP"] = function()
+	DressUpFrame_Show();
+end
+
 function Addon:OnEnable()
 	DressUpFrame:SetClampedToScreen(true);
 	DressUpFrame:SetMinResize(384, 474);

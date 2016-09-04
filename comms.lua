@@ -129,13 +129,13 @@ function Addon:InitializeComms()
 	end);
 end
 
-local ShouldHideWhisperTo = false;
+local ShouldHideWhisper = false;
 function Addon:FilterWhispers(event, message, target)
-	if(ShouldHideWhisperTo) then
-		if(strfind(string.lower(target), string.lower(ShouldHideWhisperTo)) ~= nil) then
-			ShouldHideWhisperTo = false;
+	if(ShouldHideWhisper) then
+		-- if(strfind(string.lower(target), string.lower(ShouldHideWhisper)) ~= nil) then
+		-- 	ShouldHideWhisper = false;
 			return true;
-		end
+		-- end
 	end
 	return false;
 end
@@ -275,7 +275,7 @@ function Addon:SendPreviewedItems(target)
 			Addon:AddMessage("Sent currently previewed items to %s.", target);
 		end,
 		onTimeout = function()
-			ShouldHideWhisperTo = target;
+			ShouldHideWhisper = true;
 			
 			local msg = ("%s wishes to whisper their previewed items to you but you do not have DressUp or it is outdated. "..
 				         "Get the addon from http://wow.curseforge.com/addons/dressup/"):format(UnitName("player"));

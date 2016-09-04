@@ -960,8 +960,12 @@ function Addon:HideConditionalSlots()
 	end
 end
 
-function Addon:ResetItemButtons(setEquipment)
-	DressUpFrameOutfitDropDown:SelectOutfit(nil, false);
+
+
+function Addon:ResetItemButtons(setEquipment, noOutfitReset)
+	if(not noOutfitReset) then
+		DressUpFrameOutfitDropDown:SelectOutfit(nil, false);
+	end
 	
 	for slot, button in pairs(Addon.ItemButtons) do
 		local itemlink = nil;
@@ -1098,8 +1102,8 @@ function DressUpVisual(...)
 	return true;
 end
 
-local _DressUpSources = DressUpSources;
-function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
+hooksecurefunc("DressUpSources", function(...) Addon:DressUpSources(...) end);
+function Addon:DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
 	if ( not appearanceSources ) then
 		return true;
 	end
@@ -1107,7 +1111,7 @@ function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
 	DressUpFrame_Show();
 	
 	DressUpModel:Undress();
-	Addon:ResetItemButtons(false);
+	Addon:ResetItemButtons(false, true);
 	
 	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
 	local secondaryHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");

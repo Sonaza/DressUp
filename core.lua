@@ -333,6 +333,8 @@ function Addon:OnInitialize()
 			
 			ResizeAlertShown = false;
 			
+			PromptForPreviews = true,
+			
 			Size = {
 				Width = 384,
 				Height = 474,
@@ -525,6 +527,12 @@ function DressupSettingsButton_OnClick(self)
 			text = "Disable side panel preview",
 			func = function() Addon.db.global.DisableSidePanel = not Addon.db.global.DisableSidePanel; end,
 			checked = function() return Addon.db.global.DisableSidePanel end,
+			isNotRadio = true,
+		},
+		{
+			text = "Prompt when receiving preview whisper",
+			func = function() Addon.db.global.PromptForPreviews = not Addon.db.global.PromptForPreviews; end,
+			checked = function() return Addon.db.global.PromptForPreviews end,
 			isNotRadio = true,
 		},
 		{
@@ -1118,8 +1126,6 @@ end
 function Addon:TryOn(itemSource, previewSlot, enchantID)
 	if(not itemSource) then return end
 	
-	-- print("Tryon", itemSource, previewSlot);
-	
 	-- Reset item slot if it's zero
 	if(itemSource == 0 and previewSlot) then
 		targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
@@ -1178,7 +1184,6 @@ function Addon:ForceCacheLoad(itemList)
 	
 	for slotID = 1, 18 do
 		if(itemList[slotID] and itemList[slotID] ~= 0) then
-			print(slotID, itemList[slotID]);
 			local itemLink = Addon:GetItemLinkFromSource(itemList[slotID]);
 			local item = GetItemInfo(itemLink);
 			if(not item) then needsDelay = true end
@@ -1227,8 +1232,6 @@ end
 
 function Addon:SetButtonItem(slot, itemlink)
 	if(not Addon.ItemButtons[slot]) then return end
-	
-	-- print("SetButtonItem", slot, itemlink);
 	
 	local rarity, texture = 0, nil;
 	if(itemlink) then

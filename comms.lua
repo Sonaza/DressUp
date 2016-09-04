@@ -39,16 +39,33 @@ StaticPopupDialogs["DRESSUP_VIEW_WHISPERED_PREVIEW"] = {
 	hideOnEscape = 1,
 };
 
+local function CapitalizeWord(word)
+	if(strlen(word) <= 1) then return string.upper(word) end
+	return string.upper(word:sub(1, 1)) .. string.lower(word:sub(2));
+end
+
 local function Capitalize(str)
 	if(strlen(str) <= 1) then return string.upper(str) end
 	
-	local result = {};
-	local words = { strsplit("-", str) };
+	str = string.gsub(str, "-", " ");
+	
+	local resultwords = {};
+	local words = { strsplit(" ", str) };
 	for _, word in ipairs(words) do
-		tinsert(result, string.upper(word:sub(1, 1)) .. string.lower(word:sub(2)));
+		tinsert(resultwords, CapitalizeWord(word));
 	end
 	
-	return table.concat(result, "-");
+	if(#resultwords == 1) then
+		return resultwords[1];
+	end
+	
+	local result = table.concat(resultwords, "-", 1, 2);
+	
+	if(#resultwords >= 3) then
+		result = result .. " " .. table.concat(resultwords, " ", 3);
+	end
+	
+	return result;
 end
 
 StaticPopupDialogs["DRESSUP_ASK_WHISPER_TARGET"] = {
@@ -88,8 +105,7 @@ function Addon:InitializeComms()
 	RegisterAddonMessagePrefix("DressUp");
 	
 	Addon:RegisterMessageCallback(MESSAGE_TYPES.QUERY_VERSION, function(payload, sender)
-		Addon:SendAddonMessage(sender, {
-			replyID = payload.messageID,
+		Addon:ReplyToMessage(payload, {
 			version = GetAddOnMetadata("DressUp", "Version"),
 		});
 	end);
@@ -102,7 +118,10 @@ function Addon:InitializeComms()
 		local previewID = #PENDING_PREVIEWS;
 		
 		Addon:AddMessage("Received preview from %s: |Hdressup:%d|h|cffffc809[View]|r|h.", sender, previewID);
-		StaticPopup_Show("DRESSUP_VIEW_WHISPERED_PREVIEW", sender);
+		
+		if(Addon.db.global.PromptForPreviews and not InCombatLockdown()) then
+			StaticPopup_Show("DRESSUP_VIEW_WHISPERED_PREVIEW", sender);
+		end
 	end);
 	
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", function(self, ...)
@@ -110,15 +129,29 @@ function Addon:InitializeComms()
 	end);
 end
 
+local ShouldHideWhisperTo = false;
+function Addon:FilterWhispers(event, message, target)
+	if(ShouldHideWhisperTo) then
+		if(strfind(string.lower(target), string.lower(ShouldHideWhisperTo)) ~= nil) then
+			ShouldHideWhisperTo = false;
+			return true;
+		end
+	end
+	return false;
+end
+
 hooksecurefunc("ChatFrame_OnHyperlinkShow", function(self, link, text, button)
 	if(link and link:sub(0, 7) ~= "dressup") then
+		return;
+	end
+	
+	if(IsShiftKeyDown()) then
 		return;
 	end
 	
 	local link, previewID = strsplit(":", link);
 	previewID = tonumber(previewID);
 	if(previewID) then
-		print("Viewing preview", previewID);
 		Addon:PreviewReceivedListID(previewID);
 	end
 end);
@@ -133,21 +166,10 @@ end
 
 local OriginalHandleModifiedItemClick = HandleModifiedItemClick
 function HandleModifiedItemClick(link, ...)
-	if(link and link:find("|Hdressup|h")) then
+	if(link and link:find("|Hdressup")) then
 		return;
 	end
 	return OriginalHandleModifiedItemClick(link, ...);
-end
-
-local ShouldHideWhisperTo = false;
-function Addon:FilterWhispers(event, message, target)
-	if(ShouldHideWhisperTo) then
-		if(strfind(string.lower(target), string.lower(ShouldHideWhisperTo)) ~= nil) then
-			ShouldHideWhisperTo = false;
-			return true;
-		end
-	end
-	return false;
 end
 
 local ERR_CHAT_PLAYER_NOT_FOUND_PATTERN = string.gsub(ERR_CHAT_PLAYER_NOT_FOUND_S, "%%s", "(%%a+)");
@@ -155,7 +177,7 @@ function Addon:CHAT_MSG_SYSTEM(event, msg)
 	local playerName = string.match(msg, ERR_CHAT_PLAYER_NOT_FOUND_PATTERN);
 	if(playerName) then
 		for id, data in pairs(ADDON_MESSAGE_SENT) do
-			if(data.target == playerName) then
+			if(string.lower(data.target) == string.lower(playerName)) then
 				ADDON_MESSAGE_SENT[id] = nil;
 				return;
 			end
@@ -166,9 +188,14 @@ end
 function Addon:GetUniqueMessageID()
 	local messageID;
 	repeat
-		messageID = random(1, 20000);
+		messageID = random(100, 999);
 	until(ADDON_MESSAGE_SENT[messageID] == nil);
 	return messageID;
+end
+
+function Addon:ReplyToMessage(oldpayload, newpayload, callbacks)
+	newpayload.replyID = oldpayload.messageID;
+	Addon:SendAddonMessage(oldpayload.sender, newpayload, callbacks);
 end
 
 function Addon:SendAddonMessage(target, payload, callbacks)
@@ -209,15 +236,25 @@ function Addon:SendAddonMessage(target, payload, callbacks)
 end
 
 function DressUpFrameWhisperButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:AddLine("Send Outfit")
-	GameTooltip:AddLine("Send currently previewed items to another player.", 1, 1, 1, true);
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+	GameTooltip:AddLine("Send Outfit");
+	
+	if(self:GetID() == 1) then
+		GameTooltip:AddLine("Send currently previewed items to another player.", 1, 1, 1, true);
+	elseif(self:GetID() == 2) then
+		GameTooltip:AddLine("Send current transmog to another player.", 1, 1, 1, true);
+	end
+	
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddLine("Note: target recipient must have DressUp for this feature to work.", 1, 1, 1, true);
 	GameTooltip:Show();
 end
 
 function DressUpFrameWhisperButton_OnClick(self)
+	if(not DressUpFrame:IsVisible()) then
+		DressUpFrame_Show();
+	end
+	
 	StaticPopup_Show("DRESSUP_ASK_WHISPER_TARGET");
 	GameTooltip:Hide();
 end
@@ -264,6 +301,8 @@ function Addon:CHAT_MSG_ADDON(event, prefix, message, msgtype, sender)
 		-- error("Deserialize failed", 2);
 		return;
 	end
+	
+	payload.sender = sender;
 	
 	if(payload.replyID) then
 		-- Execute reply callback

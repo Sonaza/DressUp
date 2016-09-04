@@ -205,6 +205,9 @@ function Addon:SendAddonMessage(target, payload, callbacks)
 	payload.messageID = messageID;
 	
 	local serialized = AceSerializer:Serialize(payload);
+	if(strlen(serialized) > 250) then
+		error(("Serialized string length exceeds message limit."), 2)
+	end
 	
 	if(callbacks) then
 		ADDON_MESSAGE_SENT[messageID] = {
@@ -298,7 +301,6 @@ function Addon:CHAT_MSG_ADDON(event, prefix, message, msgtype, sender)
 	
 	local deserializeSuccess, payload = AceSerializer:Deserialize(message);
 	if(not deserializeSuccess) then
-		-- error("Deserialize failed", 2);
 		return;
 	end
 	
@@ -323,15 +325,15 @@ end
 
 function Addon:RegisterMessageCallback(tag, func)
 	if(not tag) then 
-		error("Addon:RegisterMessageCallback(tag, func): Invalid tag.", 2)
+		error("DressUp:RegisterMessageCallback(tag, func): Invalid tag.", 2)
 	end
 	
 	if(ADDON_MESSAGE_CALLBACKS[tag]) then 
-		error(("Addon:RegisterMessageCallback(tag, func): %s is already registered."):format(tag), 2)
+		error(("DressUp:RegisterMessageCallback(tag, func): %s is already registered."):format(tag), 2)
 	end
 	
 	if(not func) then 
-		error("Addon:RegisterMessageCallback(tag, func): Missing callback function.", 2)
+		error("DressUp:RegisterMessageCallback(tag, func): Missing callback function.", 2)
 	end
 	
 	ADDON_MESSAGE_CALLBACKS[tag] = func;

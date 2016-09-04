@@ -1,3 +1,7 @@
+## 2.2.0
+* Added a way to whisper currently previewed items to other people.
+* Fixed weirdness with weapon previews.
+
 ## 2.1.7
 * Fixed a bug in previous update.
 

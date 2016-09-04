@@ -4,12 +4,11 @@
 -- http://sonaza.com
 ------------------------------------------------------------
 
-local ADDON_NAME, SHARED_DATA = ...;
-
-local LibStub = LibStub;
-local Addon = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceEvent-3.0", "AceHook-3.0");
-local AceDB = LibStub("AceDB-3.0");
+local ADDON_NAME = ...;
+local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceEvent-3.0", "AceHook-3.0");
 _G[ADDON_NAME] = Addon;
+
+local AceDB = LibStub("AceDB-3.0");
 
 local _;
 
@@ -108,6 +107,10 @@ local INVENTORY_SLOT_NAMES = {
 	["MAINHANDSLOT"]      = 16,
 	["SECONDARYHANDSLOT"] = 17,
 	["TABARDSLOT"]        = 19,
+};
+
+local VISIBLE_SLOTS = {
+	1, 3, 4, 5, 6, 7, 8, 9, 10, 15, 16, 17, 19,
 };
 
 -- 1 - Human
@@ -216,6 +219,11 @@ function Addon:GetRangeColor(value, minvalue, maxvalue)
 		ILVL_MIN_COLOR[2] + ILVL_COLOR_DIFF[2] * progress,
 		ILVL_MIN_COLOR[3] + ILVL_COLOR_DIFF[3] * progress
 	);
+end
+
+local MESSAGE_PATTERN = "|cffffae12DressUp|r %s";
+function Addon:AddMessage(pattern, ...)
+	DEFAULT_CHAT_FRAME:AddMessage(MESSAGE_PATTERN:format(string.format(pattern, ...)));
 end
 
 function Addon:UpdatePaperDollItemLevels()
@@ -342,6 +350,11 @@ function Addon:OnInitialize()
 	if(not Addon.db.global.ResizeAlertShown) then
 		CustomDressUpFrame.ResizeAlert:Show();
 	end
+	
+	if(not Addon.InitializeComms) then
+		error("You have updated the addon but only reloaded the interface. Please restart the game.", 1);
+	end
+	Addon:InitializeComms();
 end
 
 function CustomDressUpFrameResizeAlertCloseButton_OnClick(self)
@@ -817,15 +830,15 @@ function DressupPreviewItemButton_OnClick(self, button)
 	local slot = self:GetID();
 	
 	if(button == "LeftButton" and IsShiftKeyDown()) then
-		if(Addon.ItemButtons[slot].ItemLink) then
-			ChatEdit_InsertLink(Addon.ItemButtons[slot].ItemLink)
+		if(Addon.ItemButtons[slot].itemLink) then
+			ChatEdit_InsertLink(Addon.ItemButtons[slot].itemLink)
 		end
 	elseif(button == "RightButton") then
 		Addon:SetButtonItem(slot, nil);
 		DressUpModel:UndressSlot(slot);
 		
 		GameTooltip:ClearLines();
-		GameTooltip:AddLine(Addon.ItemButtons[slot].SlotName);
+		GameTooltip:AddLine(Addon.ItemButtons[slot].slotName);
 		GameTooltip:Show();
 	end
 end
@@ -835,10 +848,10 @@ function DressupPreviewItemButton_OnEnter(self)
 	
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 40);
 	
-	if(Addon.ItemButtons[slot].ItemLink) then
-		GameTooltip:SetHyperlink(Addon.ItemButtons[slot].ItemLink);
+	if(Addon.ItemButtons[slot].itemLink) then
+		GameTooltip:SetHyperlink(Addon.ItemButtons[slot].itemLink);
 	else
-		GameTooltip:AddLine(Addon.ItemButtons[slot].SlotName);
+		GameTooltip:AddLine(Addon.ItemButtons[slot].slotName);
 	end
 	
 	GameTooltip:Show();
@@ -879,8 +892,8 @@ function Addon:InitializeItemButtons()
 		
 		Addon.ItemButtons[slot] = {
 			Frame = buttonFrame,
-			ItemLink = nil,
-			SlotName = _G[invslot],
+			itemLink = nil,
+			slotName = _G[invslot],
 		};
 		
 		buttonFrame.icon:Hide();
@@ -958,6 +971,10 @@ function Addon:ResetItemButtons(setEquipment)
 		Addon:SetButtonItem(slot, itemlink);
 	end
 	
+	if(not Addon.db.global.HideWeapons) then
+		Addon:SetWeaponButtons();
+	end
+	
 	Addon:HideConditionalSlots();
 end
 
@@ -1013,7 +1030,6 @@ function Addon:GetItemSourceID(slot)
 		slotID   = slot;
 		slotName = INVENTORY_SLOT_NAMES[slot];
 	end
-	
 	return DressUpFrameOutfitDropDown:GetSlotSourceID(slotName, LE_TRANSMOG_TYPE_APPEARANCE);
 end
 
@@ -1035,8 +1051,8 @@ end
 function Addon:GetTransmogItemLinkFromSlot(slotID)
 	if(not slotID) then return end
 	
-	local isTransmogrified, _, _, _, _, hasUndo, isHideVisual = C_Transmog.GetSlotInfo(slot, LE_TRANSMOG_TYPE_APPEARANCE);
-	if(not isTransmogrified or isHideVisual) then return nil end
+	-- local isTransmogrified, _, _, _, _, hasUndo, isHideVisual = C_Transmog.GetSlotInfo(slotID, LE_TRANSMOG_TYPE_APPEARANCE);
+	-- if(not isTransmogrified or isHideVisual) then return nil end
 	
 	local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = Addon:GetInfoForSlot(slotID, LE_TRANSMOG_TYPE_APPEARANCE);
 	return Addon:GetItemLinkFromSource(appliedSourceID);
@@ -1066,8 +1082,46 @@ function DressUpVisual(...)
 	return true;
 end
 
+local _DressUpSources = DressUpSources;
+function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
+	if ( not appearanceSources ) then
+		return true;
+	end
+
+	DressUpFrame_Show();
+	
+	DressUpModel:Undress();
+	Addon:ResetItemButtons(false);
+	
+	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
+	local secondaryHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+	for i = 1, #appearanceSources do
+		if ( i ~= mainHandSlotID and i ~= secondaryHandSlotID ) then
+			if ( appearanceSources[i] and appearanceSources[i] ~= NO_TRANSMOG_SOURCE_ID ) then
+				DressUpModel:TryOn(appearanceSources[i]);
+			end
+		end
+	end
+
+	DressUpModel:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
+	DressUpModel:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
+end
+
 function Addon:TryOn(itemSource, previewSlot, enchantID)
 	if(not itemSource) then return end
+	
+	print(itemSource);
+	
+	-- Reset item slot if it's zero
+	if(itemSource == 0 and previewSlot) then
+		targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
+		if(not targetSlotID) then
+			targetSlotID = Addon:GetInvSlot(itemEquipLoc);
+		end
+		
+		Addon:SetButtonItem(targetSlotID, nil);
+		return;
+	end
 	
 	local itemlink;
 	if(type(itemSource) == "number") then
@@ -1093,12 +1147,42 @@ function Addon:TryOn(itemSource, previewSlot, enchantID)
 		Addon:SetButtonItem(targetSlotID, itemlink);
 	end
 	
-	if(not Addon.db.global.HideWeapons or targetSlotID == 16 or targetSlotID == 17) then
-		-- Update weapons separately since in case of dualwielding, blizz preview is all kinds of wonky
-		local mainhand = Addon:GetItemSourceID(16);
-		local offhand = Addon:GetItemSourceID(17);
-		Addon:SetButtonItem(16, Addon:GetItemLinkFromSource(mainhand));
-		Addon:SetButtonItem(17, Addon:GetItemLinkFromSource(offhand));
+	if(targetSlotID == 16 or targetSlotID == 17) then
+		Addon:SetWeaponButtons();
+	end
+end
+
+function Addon:UpdatePreviewSlot(slotID)
+	if(not slotID) then return end
+	local sourceID = Addon:GetItemSourceID(slotID);
+	Addon:SetButtonItem(slotID, Addon:GetItemLinkFromSource(sourceID));
+end
+
+function Addon:SetWeaponButtons()
+	-- Update weapons separately since in case of dualwielding, blizz preview is all kinds of wonky
+	Addon:UpdatePreviewSlot(16);
+	Addon:UpdatePreviewSlot(17);
+end
+
+function Addon:LoadItemList(itemList)
+	for slotID = 1, 19 do
+		itemList[slotID] = itemList[slotID] or 0;
+	end
+	
+	local tabard = itemList[19];
+	itemList[19] = 0;
+	
+	local sourceList = {
+		[1] = itemList,
+		[2] = 0,
+		[3] = 0,
+	};
+	
+	DressUpSources(unpack(sourceList));
+	
+	if(tabard ~= 0) then
+		local _, tabard = GetItemInfo(tabard);
+		DressUpModel:TryOn(tabard);
 	end
 end
 
@@ -1115,7 +1199,7 @@ function Addon:SetButtonItem(slot, itemlink)
 		_, _, rarity, _, _, _, _, _, _, texture = GetItemInfo(itemlink);
 	end
 	
-	Addon.ItemButtons[slot].ItemLink = itemlink;
+	Addon.ItemButtons[slot].itemLink = itemlink;
 	
 	if(texture) then
 		Addon.ItemButtons[slot].Frame.icon:SetTexture(texture)
@@ -1136,10 +1220,34 @@ end
 
 function Addon:GetSlotItem(slot)
 	if(Addon.ItemButtons[slot]) then
-		return Addon.ItemButtons[slot].ItemLink;
+		return Addon.ItemButtons[slot].itemLink;
 	end
 	
 	return nil;
+end
+
+function Addon:GetItemID(itemLink)
+	if(not itemLink) then return end
+	
+	local itemID = strmatch(itemLink, "item:(%d+)");
+	return itemID and tonumber(itemID) or nil;
+end
+
+function Addon:GetPreviewedItemsList()
+	local items = {};
+	for _, slotID in ipairs(VISIBLE_SLOTS) do
+		local sourceID = Addon:GetItemSourceID(slotID);
+		
+		if(slotID == 19) then
+			local link = Addon:GetSlotItem(19);
+			sourceID = Addon:GetItemID(link);
+		end
+		
+		if(sourceID and sourceID ~= 0 and sourceID ~= 77345) then
+			items[slotID] = sourceID;
+		end
+	end
+	return items;
 end
 
 function Addon:PAPERDOLL_OPENED()

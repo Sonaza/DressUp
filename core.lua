@@ -1110,8 +1110,6 @@ end
 function Addon:TryOn(itemSource, previewSlot, enchantID)
 	if(not itemSource) then return end
 	
-	print(itemSource);
-	
 	-- Reset item slot if it's zero
 	if(itemSource == 0 and previewSlot) then
 		targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;

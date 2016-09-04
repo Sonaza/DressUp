@@ -33,6 +33,37 @@ StaticPopupDialogs["DRESSUP_VIEW_WHISPERED_PREVIEW"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["DRESSUP_ASK_WHISPER_TARGET"] = {
+	text = "Give outfit preview recipient's name (with realm if needed):",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	OnAccept = function(self, data)
+		local recipient = strtrim(self.editBox:GetText());
+		if(strlen(recipient) > 0) then
+			Addon:SendPreviewedItems(recipient);
+		end
+	end,
+	EditBoxOnEnterPressed = function(self, data)
+		local parent = self:GetParent();
+		local recipient = strtrim(parent.editBox:GetText());
+		if(strlen(recipient) > 0) then
+			Addon:SendPreviewedItems(recipient);
+		end
+		parent:Hide();
+	end,
+	OnShow = function(self, data)
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self, data)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	timeout = 0,
+	exclusive = 0,
+	hideOnEscape = 1,
+};
+
 function Addon:InitializeComms()
 	Addon:RegisterEvent("CHAT_MSG_ADDON");
 	Addon:RegisterEvent("CHAT_MSG_SYSTEM");
@@ -128,6 +159,20 @@ function Addon:SendAddonMessage(target, payload, callbacks)
 	return messageID;
 end
 
+function DressUpFrameWhisperButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:AddLine("Send Outfit")
+	GameTooltip:AddLine("Send currently previewed items to another player.", 1, 1, 1, true);
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddLine("Note: target recipient must have DressUp for this feature to work.", 1, 1, 1, true);
+	GameTooltip:Show();
+end
+
+function DressUpFrameWhisperButton_OnClick(self)
+	StaticPopup_Show("DRESSUP_ASK_WHISPER_TARGET");
+	GameTooltip:Hide();
+end
+
 -- /run DressUp:SendPreviewedItems("Sonaza")
 function Addon:SendPreviewedItems(target)
 	-- Check for target version first
@@ -165,8 +210,6 @@ end
 
 function Addon:CHAT_MSG_ADDON(event, prefix, message, msgtype, sender)
 	if(prefix ~= ADDON_CHANNEL_PREFIX) then return end
-	
-	print(prefix, message, sender);
 	
 	local deserializeSuccess, payload = AceSerializer:Deserialize(message);
 	if(not deserializeSuccess) then

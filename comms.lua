@@ -108,7 +108,7 @@ hooksecurefunc("ChatFrame_OnHyperlinkShow", function(self, link, text, button)
 		return;
 	end
 	
-	local link, previewID = strslpit(":")
+	local link, previewID = strsplit(":", link);
 	previewID = tonumber(previewID);
 	if(previewID) then
 		Addon:PreviewReceivedListID(previewID);

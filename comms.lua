@@ -17,7 +17,14 @@ local MESSAGE_TYPES = {
 
 local AceSerializer = LibStub("AceSerializer-3.0");
 
-local PENDING_PREVIEWS = {};
+PENDING_PREVIEWS = {};
+
+function Addon:PreviewReceivedListID(previewID)
+	if(not PENDING_PREVIEWS[previewID]) then return end
+	
+	local preview = PENDING_PREVIEWS[previewID];
+	Addon:LoadItemList(preview.items);
+end
 
 StaticPopupDialogs["DRESSUP_VIEW_WHISPERED_PREVIEW"] = {
 	text = "%s sent you their previewed items. Click accept if you wish to preview them.",
@@ -25,13 +32,17 @@ StaticPopupDialogs["DRESSUP_VIEW_WHISPERED_PREVIEW"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		-- Get newest preview
-		local preview = PENDING_PREVIEWS[#PENDING_PREVIEWS];
-		Addon:LoadItemList(preview.items);
+		Addon:PreviewReceivedListID(#PENDING_PREVIEWS);
 	end,
 	timeout = 0,
 	exclusive = 0,
 	hideOnEscape = 1,
 };
+
+local function Capitalize(str)
+	if(strlen(str) <= 1) then return string.upper(str) end
+	return string.upper(str:sub(1, 1)) .. string.lower(str:sub(2));
+end
 
 StaticPopupDialogs["DRESSUP_ASK_WHISPER_TARGET"] = {
 	text = "Give outfit preview recipient's name (with realm if needed):",
@@ -39,14 +50,14 @@ StaticPopupDialogs["DRESSUP_ASK_WHISPER_TARGET"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	OnAccept = function(self, data)
-		local recipient = strtrim(self.editBox:GetText());
+		local recipient = Capitalize(strtrim(self.editBox:GetText()));
 		if(strlen(recipient) > 0) then
 			Addon:SendPreviewedItems(recipient);
 		end
 	end,
 	EditBoxOnEnterPressed = function(self, data)
 		local parent = self:GetParent();
-		local recipient = strtrim(parent.editBox:GetText());
+		local recipient = Capitalize(strtrim(parent.editBox:GetText()));
 		if(strlen(recipient) > 0) then
 			Addon:SendPreviewedItems(recipient);
 		end
@@ -81,13 +92,43 @@ function Addon:InitializeComms()
 			from = sender,
 			items = payload.items,
 		});
+		local previewID = #PENDING_PREVIEWS;
 		
+		Addon:AddMessage("Received preview from %s: |Hdressup:%d|h|cffffc809[View]|r|h.", sender, previewID);
 		StaticPopup_Show("DRESSUP_VIEW_WHISPERED_PREVIEW", sender);
 	end);
 	
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", function(self, ...)
 		return Addon:FilterWhispers(...);
 	end);
+end
+
+hooksecurefunc("ChatFrame_OnHyperlinkShow", function(self, link, text, button)
+	if(link and link:sub(0, 7) ~= "dressup") then
+		return;
+	end
+	
+	local link, previewID = strslpit(":")
+	previewID = tonumber(previewID);
+	if(previewID) then
+		Addon:PreviewReceivedListID(previewID);
+	end
+end);
+
+local OriginalSetHyperlink = ItemRefTooltip.SetHyperlink
+function ItemRefTooltip:SetHyperlink(link, ...)
+	if(link and link:sub(0, 7) == "dressup") then
+		return;
+	end
+	return OriginalSetHyperlink(self, link, ...);
+end
+
+local OriginalHandleModifiedItemClick = HandleModifiedItemClick
+function HandleModifiedItemClick(link, ...)
+	if(link and link:find("|Hdressup|h")) then
+		return;
+	end
+	return OriginalHandleModifiedItemClick(link, ...);
 end
 
 local ShouldHideWhisperTo = false;

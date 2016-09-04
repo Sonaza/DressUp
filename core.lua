@@ -113,6 +113,12 @@ local VISIBLE_SLOTS = {
 	1, 3, 4, 5, 6, 7, 8, 9, 10, 15, 16, 17, 19,
 };
 
+local HIDDEN_SOURCES_LIST = {
+	[77343] = true, -- Shoulder
+	[77344] = true, -- Helm
+	[77345] = true, -- Cloak
+};
+
 -- 1 - Human
 -- 2 - Orc
 -- 3 - Dwarf
@@ -977,10 +983,6 @@ function Addon:ResetItemButtons(setEquipment)
 		Addon:SetButtonItem(slot, itemlink);
 	end
 	
-	if(not Addon.db.global.HideWeapons) then
-		Addon:SetWeaponButtons();
-	end
-	
 	Addon:HideConditionalSlots();
 end
 
@@ -1116,6 +1118,8 @@ end
 function Addon:TryOn(itemSource, previewSlot, enchantID)
 	if(not itemSource) then return end
 	
+	-- print("Tryon", itemSource, previewSlot);
+	
 	-- Reset item slot if it's zero
 	if(itemSource == 0 and previewSlot) then
 		targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
@@ -1145,8 +1149,8 @@ function Addon:TryOn(itemSource, previewSlot, enchantID)
 			targetSlotID = Addon:GetInvSlot(itemEquipLoc);
 		end
 		
-		-- Don't display hidden cloak
-		if(itemSource == 77345) then return end
+		-- Don't display hidden sources
+		if(HIDDEN_SOURCES_LIST[itemSource]) then return end
 		
 		Addon:SetButtonItem(targetSlotID, itemlink);
 	end
@@ -1168,7 +1172,29 @@ function Addon:SetWeaponButtons()
 	Addon:UpdatePreviewSlot(17);
 end
 
+-- Hacky hack hack
+function Addon:ForceCacheLoad(itemList)
+	local needsDelay = false;
+	
+	for slotID = 1, 18 do
+		if(itemList[slotID]) then
+			local itemLink = Addon:GetItemLinkFromSource(itemList[slotID]);
+			local item = GetItemInfo(itemLink);
+			if(not item) then needsDelay = true end
+		end
+	end
+	
+	if(itemList[19]) then
+		local item = GetItemInfo(itemList[19]);
+		if(not item) then needsDelay = true end
+	end
+	
+	return needsDelay;
+end
+
 function Addon:LoadItemList(itemList)
+	local needsDelay = Addon:ForceCacheLoad(itemList);
+	
 	for slotID = 1, 19 do
 		itemList[slotID] = itemList[slotID] or 0;
 	end
@@ -1182,12 +1208,14 @@ function Addon:LoadItemList(itemList)
 		[3] = 0,
 	};
 	
-	DressUpSources(unpack(sourceList));
-	
-	if(tabard ~= 0) then
-		local _, tabard = GetItemInfo(tabard);
-		DressUpModel:TryOn(tabard);
-	end
+	C_Timer.After(needsDelay and 0.12 or 0, function()
+		DressUpSources(unpack(sourceList));
+		
+		if(tabard ~= 0) then
+			local _, tabard = GetItemInfo(tabard);
+			DressUpModel:TryOn(tabard);
+		end
+	end);
 end
 
 function Addon:GetInvSlot(equiploc)
@@ -1197,6 +1225,8 @@ end
 
 function Addon:SetButtonItem(slot, itemlink)
 	if(not Addon.ItemButtons[slot]) then return end
+	
+	-- print("SetButtonItem", slot, itemlink);
 	
 	local rarity, texture = 0, nil;
 	if(itemlink) then
@@ -1247,7 +1277,7 @@ function Addon:GetPreviewedItemsList()
 			sourceID = Addon:GetItemID(link);
 		end
 		
-		if(sourceID and sourceID ~= 0 and sourceID ~= 77345) then
+		if(sourceID and sourceID ~= 0 and not HIDDEN_SOURCES_LIST[sourceID]) then
 			items[slotID] = sourceID;
 		end
 	end

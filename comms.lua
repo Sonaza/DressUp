@@ -41,7 +41,14 @@ StaticPopupDialogs["DRESSUP_VIEW_WHISPERED_PREVIEW"] = {
 
 local function Capitalize(str)
 	if(strlen(str) <= 1) then return string.upper(str) end
-	return string.upper(str:sub(1, 1)) .. string.lower(str:sub(2));
+	
+	local result = {};
+	local words = { strsplit("-", str) };
+	for _, word in ipairs(words) do
+		tinsert(result, string.upper(word:sub(1, 1)) .. string.lower(word:sub(2)));
+	end
+	
+	return table.concat(result, "-");
 end
 
 StaticPopupDialogs["DRESSUP_ASK_WHISPER_TARGET"] = {
@@ -111,6 +118,7 @@ hooksecurefunc("ChatFrame_OnHyperlinkShow", function(self, link, text, button)
 	local link, previewID = strsplit(":", link);
 	previewID = tonumber(previewID);
 	if(previewID) then
+		print("Viewing preview", previewID);
 		Addon:PreviewReceivedListID(previewID);
 	end
 end);
@@ -134,7 +142,7 @@ end
 local ShouldHideWhisperTo = false;
 function Addon:FilterWhispers(event, message, target)
 	if(ShouldHideWhisperTo) then
-		if(strfind(target, ShouldHideWhisperTo) ~= nil) then
+		if(strfind(string.lower(target), string.lower(ShouldHideWhisperTo)) ~= nil) then
 			ShouldHideWhisperTo = false;
 			return true;
 		end

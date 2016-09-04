@@ -1177,14 +1177,15 @@ function Addon:ForceCacheLoad(itemList)
 	local needsDelay = false;
 	
 	for slotID = 1, 18 do
-		if(itemList[slotID]) then
+		if(itemList[slotID] and itemList[slotID] ~= 0) then
+			print(slotID, itemList[slotID]);
 			local itemLink = Addon:GetItemLinkFromSource(itemList[slotID]);
 			local item = GetItemInfo(itemLink);
 			if(not item) then needsDelay = true end
 		end
 	end
 	
-	if(itemList[19]) then
+	if(itemList[19] and itemList[19] ~= 0) then
 		local item = GetItemInfo(itemList[19]);
 		if(not item) then needsDelay = true end
 	end
@@ -1195,15 +1196,16 @@ end
 function Addon:LoadItemList(itemList)
 	local needsDelay = Addon:ForceCacheLoad(itemList);
 	
+	local tempList = {};
 	for slotID = 1, 19 do
-		itemList[slotID] = itemList[slotID] or 0;
+		tempList[slotID] = itemList[slotID] or 0;
 	end
 	
-	local tabard = itemList[19];
-	itemList[19] = 0;
+	local tabard = tempList[19];
+	tempList[19] = 0;
 	
 	local sourceList = {
-		[1] = itemList,
+		[1] = tempList,
 		[2] = 0,
 		[3] = 0,
 	};

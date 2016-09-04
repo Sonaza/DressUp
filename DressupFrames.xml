@@ -206,6 +206,52 @@
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-9" y="-66"/>
 		</Anchors>
+		<Frames>
+			<Frame parentKey="Alert" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="19" y=""/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="DRESSUP_WHISPER_TUTORIAL_TEXT">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								DressUpPreviewWhisperButtonAlertCloseButton_OnClick(self);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="34" y="16"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SetClampedTextureRotation(self.Arrow.Arrow, 90);
+						SetClampedTextureRotation(self.Arrow.Glow, 90);
+						self.Arrow.Glow:Hide();
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight()+42);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
 	</Button>
 	
 	<Button name="DressUpCharacterPanelWhisperButton" parent="PaperDollFrame" inherits="DressUpWhisperButtonTemplate" id="2">

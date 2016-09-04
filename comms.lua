@@ -258,6 +258,10 @@ function DressUpFrameWhisperButton_OnClick(self)
 		DressUpFrame_Show();
 	end
 	
+	if(self:GetID() == 1) then
+		DressUpPreviewWhisperButtonAlertCloseButton_OnClick();
+	end
+	
 	StaticPopup_Show("DRESSUP_ASK_WHISPER_TARGET");
 	GameTooltip:Hide();
 end

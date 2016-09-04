@@ -29,6 +29,8 @@ DressUpFrameResetButton         = CustomDressUpFrameResetButton;
 DressUpFrameCancelButton        = CustomDressUpFrameCancelButton;
 DressUpFrameOutfitDropDown      = CustomDressUpFrameOutfitDropDown;
 
+DRESSUP_WHISPER_TUTORIAL_TEXT = "Click here to whisper your previewed outfit to other players.|n|nNote: For the feature to work they must also have an up to date version of DressUp.";
+
 tinsert(UISpecialFrames, "CustomDressUpFrame");
 UIPanelWindows["CustomDressUpFrame"] = { area = "left", pushable = 2 };
 
@@ -331,7 +333,7 @@ function Addon:OnInitialize()
 			SaveCustomBackground = false,
 			CustomBackground = nil,
 			
-			ResizeAlertShown = false;
+			WhisperAlertShown = false,
 			
 			PromptForPreviews = true,
 			
@@ -355,8 +357,8 @@ function Addon:OnInitialize()
 		Addon:HideItemLevels();
 	end
 	
-	if(not Addon.db.global.ResizeAlertShown) then
-		CustomDressUpFrame.ResizeAlert:Show();
+	if(not Addon.db.global.WhisperAlertShown) then
+		DressUpPreviewWhisperButton.Alert:Show();
 	end
 	
 	if(not Addon.InitializeComms) then
@@ -365,8 +367,9 @@ function Addon:OnInitialize()
 	Addon:InitializeComms();
 end
 
-function CustomDressUpFrameResizeAlertCloseButton_OnClick(self)
-	Addon.db.global.ResizeAlertShown = true;
+function DressUpPreviewWhisperButtonAlertCloseButton_OnClick(self)
+	DressUpPreviewWhisperButton.Alert:Hide();
+	Addon.db.global.WhisperAlertShown = true;
 end
 
 local DressUpModelOnEnter;
@@ -599,6 +602,7 @@ function DressupSettingsButton_OnClick(self)
 	
 	DropDownList1:ClearAllPoints();
 	DropDownList1:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+	DropDownList1:SetClampedToScreen(true);
 end
 
 function Addon:SetDressUpBackground(frame, fileName)

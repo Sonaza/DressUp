@@ -133,7 +133,7 @@ local ShouldHideWhisper = false;
 function Addon:FilterWhispers(event, message, target)
 	if(ShouldHideWhisper) then
 		-- if(strfind(string.lower(target), string.lower(ShouldHideWhisper)) ~= nil) then
-		-- 	ShouldHideWhisper = false;
+			ShouldHideWhisper = false;
 			return true;
 		-- end
 	end

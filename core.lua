@@ -234,6 +234,21 @@ function Addon:AddMessage(pattern, ...)
 	DEFAULT_CHAT_FRAME:AddMessage(MESSAGE_PATTERN:format(string.format(pattern, ...)));
 end
 
+function Addon:GetArtifactItemLevel()
+	local mainhand = GetInventoryItemLink("player", 16);
+	local offhand = GetInventoryItemLink("player", 17);
+	
+	if(not mainhand) then return end
+	
+	local _, _, quality = GetItemInfo(mainhand);
+	if(quality ~= 6) then return end
+	
+	local mainhandItemLevel = Addon:GetRealItemLevel(mainhand);
+	local offhandItemLevel = Addon:GetRealItemLevel(offhand);
+	
+	return math.max(mainhandItemLevel, offhandItemLevel or 0);
+end
+
 function Addon:UpdatePaperDollItemLevels()
 	local itemlevels = {};
 	
@@ -242,23 +257,24 @@ function Addon:UpdatePaperDollItemLevels()
 	
 	for slotName, slotId in pairs(paperDollSlots) do
 		local realSlotId = slotId;
-		if(realSlotId == 17) then
-			local link = GetInventoryItemLink("player", realSlotId);
-			if(link) then
-				local _, _, quality = GetItemInfo(link);
-				if(quality == 6) then
-					slotId = 16;
-				end
-			end
+		local artifactItemLevel;
+		if(realSlotId == 16 or realSlotId == 17) then
+			artifactItemLevel = Addon:GetArtifactItemLevel();
 		end
 		
-		local link = GetInventoryItemLink("player", slotId);
-		if(link) then
-			local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
-			if(itemLevel) then
-				itemlevels[realSlotId] = itemLevel;
-				lowest = math.min(lowest, itemLevel or 1);
-				highest = math.max(highest, itemLevel or 1);
+		if(artifactItemLevel) then
+			itemlevels[realSlotId] = artifactItemLevel;
+			lowest = math.min(lowest, artifactItemLevel or 1);
+			highest = math.max(highest, artifactItemLevel or 1);
+		else
+			local link = GetInventoryItemLink("player", slotId);
+			if(link) then
+				local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
+				if(itemLevel) then
+					itemlevels[realSlotId] = itemLevel;
+					lowest = math.min(lowest, itemLevel or 1);
+					highest = math.max(highest, itemLevel or 1);
+				end
 			end
 		end
 	end

@@ -1,3 +1,6 @@
+## 2.2.1
+* Really fixed artifact item level display.
+
 ## 2.2.0
 * Added a way to whisper currently previewed items to other people.
 * Added slash command to open the dressing room. Type /dressup or /dressingroom.

@@ -262,13 +262,13 @@ function Addon:UpdatePaperDollItemLevels()
 			artifactItemLevel = Addon:GetArtifactItemLevel();
 		end
 		
-		if(artifactItemLevel) then
-			itemlevels[realSlotId] = artifactItemLevel;
-			lowest = math.min(lowest, artifactItemLevel or 1);
-			highest = math.max(highest, artifactItemLevel or 1);
-		else
-			local link = GetInventoryItemLink("player", slotId);
-			if(link) then
+		local link = GetInventoryItemLink("player", slotId);
+		if(link) then
+			if(artifactItemLevel) then
+				itemlevels[realSlotId] = artifactItemLevel;
+				lowest = math.min(lowest, artifactItemLevel or 1);
+				highest = math.max(highest, artifactItemLevel or 1);
+			else
 				local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
 				if(itemLevel) then
 					itemlevels[realSlotId] = itemLevel;

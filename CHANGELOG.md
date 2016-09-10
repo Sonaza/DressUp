@@ -1,3 +1,6 @@
+## 2.2.2
+* Like really really fixed artifact item level display (hiding offhand item level when no offhand).
+
 ## 2.2.1
 * Really fixed artifact item level display.
 

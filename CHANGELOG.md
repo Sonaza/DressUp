@@ -1,4 +1,7 @@
 ## 2.2.2
+* TOC bump for 7.1.0.
+
+## 2.2.2
 * Like really really fixed artifact item level display (hiding offhand item level when no offhand).
 
 ## 2.2.1

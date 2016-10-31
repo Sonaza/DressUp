@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: DressUp
 ## Notes: Additional options for default Dressup Frame
 ## Author: Sonaza

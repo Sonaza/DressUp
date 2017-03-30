@@ -1,3 +1,6 @@
+## 2.2.4
+* TOC bump for 7.2.0.
+
 ## 2.2.3
 * TOC bump for 7.1.0.
 

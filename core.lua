@@ -836,7 +836,10 @@ function Addon:GenerateRaceMenu()
 end
 
 function DressUpRaceDropdown_OnClick()
-	if(DropDownList1:IsVisible()) then CloseMenus(); return end
+	if(DropDownList1:IsVisible()) then 
+		CloseMenus(); 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	return end
 	
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	

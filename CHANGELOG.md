@@ -1,3 +1,7 @@
+## 2.3.0
+* TOC bump for 7.3.0.
+* Applied fix to PlaySound errors (provided by Bramvangemert @ Github).
+
 ## 2.2.4
 * TOC bump for 7.2.0.
 

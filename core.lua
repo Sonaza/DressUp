@@ -293,7 +293,7 @@ function Addon:UpdatePaperDollItemLevels()
 				frame.value:SetText(("%d"):format(itemLevel));
 			end
 		else
-			frame.value:SetText("0");
+			frame.value:SetText("");
 		end
 	end
 end

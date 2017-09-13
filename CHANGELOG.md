@@ -1,3 +1,6 @@
+## 2.3.1
+* Fixed incorrect artifact item level being displayed after upgrading one in the Netherlight Crucible.
+
 ## 2.3.0
 * TOC bump for 7.3.0.
 * Applied fix to PlaySound errors (provided by Bramvangemert @ Github).

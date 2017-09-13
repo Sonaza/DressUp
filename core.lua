@@ -181,7 +181,7 @@ local RACE_NAMES = {
 
 local tooltip = nil;
 
-function Addon:GetRealItemLevel(itemLink)
+function Addon:GetRealItemLevel(itemLink, itemSlotId)
 	if(not itemLink) then return 0, 0; end
 	
 	if(not DressUpInternalTooltip) then
@@ -189,7 +189,12 @@ function Addon:GetRealItemLevel(itemLink)
 	end
 	
 	tooltip:SetOwner(UIParent, "ANCHOR_NONE");
-	tooltip:SetHyperlink(itemLink);
+	if(itemSlotId) then
+		tooltip:SetInventoryItem("player", itemSlotId);
+	else
+		tooltip:SetHyperlink(itemLink);
+	end
+	tooltip:Show();
 	
 	local _, _, _, itemLevel = GetItemInfo(itemLink);
 	
@@ -199,7 +204,6 @@ function Addon:GetRealItemLevel(itemLink)
 		
 		if(left) then
 			local currentItemLevel, defaultItemLevel = string.match(strtrim(left:GetText() or ""), "Item Level (%d+) ?%(?(%d*)%)?");
-			
 			if(currentItemLevel ~= nil) then
 				currentItemLevel, defaultItemLevel = tonumber(currentItemLevel), tonumber(defaultItemLevel);
 				return currentItemLevel, defaultItemLevel or itemLevel;
@@ -243,8 +247,8 @@ function Addon:GetArtifactItemLevel()
 	local _, _, quality = GetItemInfo(mainhand);
 	if(quality ~= 6) then return end
 	
-	local mainhandItemLevel = Addon:GetRealItemLevel(mainhand);
-	local offhandItemLevel = Addon:GetRealItemLevel(offhand);
+	local mainhandItemLevel = Addon:GetRealItemLevel(mainhand, 16);
+	local offhandItemLevel = Addon:GetRealItemLevel(offhand, 17);
 	
 	return math.max(mainhandItemLevel, offhandItemLevel or 0);
 end
@@ -269,7 +273,7 @@ function Addon:UpdatePaperDollItemLevels()
 				lowest = math.min(lowest, artifactItemLevel or 1);
 				highest = math.max(highest, artifactItemLevel or 1);
 			else
-				local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link);
+				local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link, realSlotId);
 				if(itemLevel) then
 					itemlevels[realSlotId] = itemLevel;
 					lowest = math.min(lowest, itemLevel or 1);
@@ -289,7 +293,7 @@ function Addon:UpdatePaperDollItemLevels()
 				frame.value:SetText(("%d"):format(itemLevel));
 			end
 		else
-			frame.value:SetText("");
+			frame.value:SetText("0");
 		end
 	end
 end

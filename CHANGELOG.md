@@ -1,3 +1,9 @@
+## 2.3.2
+* Added allied races to the preview drop down menu.
+* Made the custom dress up frame movable. Thanks fuda01.
+* Added option to always start previews undressed.
+	* Be aware combined with race previews the new armor sets with 3D gadgets seem to remain on model and there is nothing that can be done about it.
+
 ## 2.3.1
 * Fixed incorrect artifact item level being displayed after upgrading one in the Netherlight Crucible.
 

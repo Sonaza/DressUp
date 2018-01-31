@@ -137,14 +137,22 @@ local HIDDEN_SOURCES_LIST = {
 -- 25 - Alliance Pandaren
 -- 26 - Horde Pandaren
 
+-- 27 - Nightborne
+-- 28 - Highmountain Tauren
+-- 29 - Void Elf
+-- 30 - Lightforged Draenei
+
+
 local RACES = {
-	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen",
-	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin",
+	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen", "Void Elf", "Lightforged Draenei", --"Dark Iron Dwarf",
+	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin", "Nightborne", "Highmountain Tauren", --"Zandalari Troll",
 	"Pandaren",
 };
 
 local RACE_IDS = {
-	1, 3, 4, 7, 11, 22, 2, 5, 6, 8, 10, 9, 24,
+	1, 3, 4, 7, 11, 22, 29, 30,
+	2, 5, 6, 8, 10, 9,  27, 28,
+	24,
 }
 
 local RACE_NAMES = {
@@ -349,6 +357,7 @@ function Addon:OnInitialize()
 			HideTabard = false,
 			HideWeapons = false,
 			HideShirt = false,
+			StartUndressed = false,
 			
 			SaveCustomBackground = false,
 			CustomBackground = nil,
@@ -556,6 +565,18 @@ function DressupSettingsButton_OnClick(self)
 			text = "Prompt when receiving preview whisper",
 			func = function() Addon.db.global.PromptForPreviews = not Addon.db.global.PromptForPreviews; end,
 			checked = function() return Addon.db.global.PromptForPreviews end,
+			isNotRadio = true,
+		},
+		{
+			text = " ", isTitle = true, notCheckable = true,
+		},
+		{
+			text = "Slot visibility", isTitle = true, notCheckable = true,
+		},
+		{
+			text = "Always start undressed",
+			func = function() Addon.db.global.StartUndressed = not Addon.db.global.StartUndressed; end,
+			checked = function() return Addon.db.global.StartUndressed end,
 			isNotRadio = true,
 		},
 		{
@@ -808,8 +829,8 @@ function Addon:GenerateRaceMenu()
 	
 	local factions = {
 		[1]	= "Alliance",
-		[7] = "Horde",
-		[13] = "Neutral",
+		[9] = "Horde",
+		[17] = "Neutral",
 	};
 	
 	for k, v in ipairs(RACES) do
@@ -968,26 +989,28 @@ function Addon:GetInfoForSlot(slot_id, transmogType)
 end
 
 function Addon:HideConditionalSlots()
-	if(Addon.db.global.HideTabard) then
-		DressUpModel:UndressSlot(19);
-		Addon:SetButtonItem(19, nil);
-	end
-	
-	if(Addon.db.global.HideShirt) then
-		DressUpModel:UndressSlot(4);
-		Addon:SetButtonItem(4, nil);
-	end
-	
-	if(Addon.db.global.HideWeapons) then
-		DressUpModel:UndressSlot(16);
-		Addon:SetButtonItem(16, nil);
+	if(not Addon.db.global.StartUndressed) then
+		if(Addon.db.global.HideTabard) then
+			DressUpModel:UndressSlot(19);
+			Addon:SetButtonItem(19, nil);
+		end
 		
-		DressUpModel:UndressSlot(17);
-		Addon:SetButtonItem(17, nil);
+		if(Addon.db.global.HideShirt) then
+			DressUpModel:UndressSlot(4);
+			Addon:SetButtonItem(4, nil);
+		end
+		
+		if(Addon.db.global.HideWeapons) then
+			DressUpModel:UndressSlot(16);
+			Addon:SetButtonItem(16, nil);
+			
+			DressUpModel:UndressSlot(17);
+			Addon:SetButtonItem(17, nil);
+		end
+	else
+		DressUpModel:Undress();
 	end
 end
-
-
 
 function Addon:ResetItemButtons(setEquipment, noOutfitReset)
 	if(not noOutfitReset) then
@@ -997,7 +1020,7 @@ function Addon:ResetItemButtons(setEquipment, noOutfitReset)
 	for slot, button in pairs(Addon.ItemButtons) do
 		local itemlink = nil;
 		
-		if(setEquipment) then
+		if(setEquipment and not Addon.db.global.StartUndressed) then
 			local skip = false;
 			if(slot == 19 and Addon.db.global.HideTabard) then skip = true; end
 			if(slot == 4 and Addon.db.global.HideShirt) then skip = true; end

@@ -1,3 +1,7 @@
+## 2.3.3
+* Added missing allied race background images.
+* Added the class based background images. Use CTRL+Mouse wheel to switch the background.
+
 ## 2.3.2
 * Added allied races to the preview drop down menu.
 * Made the custom dress up frame movable. Thanks fuda01.

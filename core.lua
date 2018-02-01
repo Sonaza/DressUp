@@ -153,7 +153,26 @@ local RACE_IDS = {
 	1, 3, 4, 7, 11, 22, 29, 30,
 	2, 5, 6, 8, 10, 9,  27, 28,
 	24,
-}
+};
+local NUM_RACE_IDS = 17;
+
+local CLASS_BACKGROUNDS = {
+	"Interface\\DRESSUPFRAME\\DressingRoomPaladin",
+	"Interface\\DRESSUPFRAME\\DressingRoomWarrior",
+	"Interface\\DRESSUPFRAME\\DressingRoomMonk",
+	"Interface\\DRESSUPFRAME\\DressingRoomDeathKnight",
+	"Interface\\DRESSUPFRAME\\DressingRoomShaman",
+	"Interface\\DRESSUPFRAME\\DressingRoomRogue",
+	"Interface\\DRESSUPFRAME\\DressingRoomWarlock",
+	"Interface\\DRESSUPFRAME\\DressingRoomPriest",
+	"Interface\\DRESSUPFRAME\\DressingRoomMage",
+	"Interface\\DRESSUPFRAME\\DressingRoomHunter",
+	"Interface\\DRESSUPFRAME\\DressingRoomDruid",
+	"Interface\\DRESSUPFRAME\\DressingRoomDemonHunter",
+};
+local NUM_CLASS_BACKGROUNDS = 11;
+
+local NUM_MAX_BACKGROUNDS = NUM_RACE_IDS + NUM_CLASS_BACKGROUNDS;
 
 local RACE_NAMES = {
 	[1]	 = "Human",
@@ -170,6 +189,10 @@ local RACE_NAMES = {
 	[9]	 = "Goblin",
 	[24] = "Pandaren",
 	[0]	 = "Pet",
+	[27] = "Nightborne",
+	[28] = "HighmountainTauren",
+	[29] = "VoidElf",
+	[30] = "LightforgedDraenei",
 	
 	["Human"]		= 1,
 	["Dwarf"]		= 3,
@@ -185,6 +208,10 @@ local RACE_NAMES = {
 	["Goblin"]		= 9,
 	["Pandaren"]	= 24,
 	["Pet"]			= 0,
+	["Nightborne"]         = 27,
+	["HighmountainTauren"] = 28,
+	["VoidElf"]            = 29,
+	["LightforgedDraenei"] = 30,
 }
 
 local tooltip = nil;
@@ -646,22 +673,34 @@ function DressupSettingsButton_OnClick(self)
 	DropDownList1:SetClampedToScreen(true);
 end
 
-function Addon:SetDressUpBackground(frame, fileName)
-	fileName = fileName or "Orc";
-	frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-" .. fileName);
+function Addon:SetDressUpBackground(frame, fileName, classBackground)
+	print("SetDressUpBackground", fileName);
 	
-	Addon:UpdateBackgroundTexCoords();
+	local imageWidth = 318;
+	local imageHeight = 332;
+	if(not classBackground) then
+		fileName = fileName or "Orc";
+		frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-" .. fileName);
+	else
+		imageWidth = 480;
+		imageHeight = 502;
+		frame.background:SetTexture(fileName);
+	end
+	
+	Addon:UpdateBackgroundTexCoords(imageWidth, imageHeight);
 	Addon:UpdateBackgroundDim();
 end
 
-function Addon:UpdateBackgroundTexCoords()
+function Addon:UpdateBackgroundTexCoords(imageWidth, imageHeight)
+	if(imageWidth) then Addon.CurrentImageWidth = imageWidth end
+	if(imageHeight) then Addon.CurrentImageHeight = imageHeight end
+	if(not Addon.CurrentImageWidth or not Addon.CurrentImageHeight) then return end
+	
 	local width, height = CustomDressUpModel:GetSize();
 	local ratio = width / height;
 	
-	-- local left = 0.578125;
-	-- local right = 0.96875;
-	local left = 0.62109375;
-	local right = 0.6484375;
+	local left = Addon.CurrentImageWidth / 512;
+	local right = Addon.CurrentImageHeight / 512;
 	local origRatio = left / right;
 	
 	local ow = left / 2;
@@ -731,8 +770,10 @@ function Addon:SetCustomBackground(background_id)
 	
 	if(background_id == 0) then
 		Addon:SetDressUpBackground(DressUpFrame, "Pet");
-	else
-		Addon:SetDressUpBackground(DressUpFrame, RACE_NAMES[RACE_IDS[Addon.CustomBackground]]);
+	elseif(background_id > 0 and background_id <= NUM_RACE_IDS) then
+		Addon:SetDressUpBackground(DressUpFrame, RACE_NAMES[RACE_IDS[background_id]]);
+	elseif(background_id > NUM_RACE_IDS) then
+		Addon:SetDressUpBackground(DressUpFrame, CLASS_BACKGROUNDS[background_id - NUM_RACE_IDS], true);
 	end
 end
 
@@ -753,10 +794,11 @@ function Addon:SwitchBackground(dir)
 			dir = 0;
 		end
 		
-		Addon.CustomBackground = Addon.CustomBackground + dir;
-		if(Addon.CustomBackground > 13) then Addon.CustomBackground = 1 end
-		if(Addon.CustomBackground < 1) then Addon.CustomBackground = 13 end
+		Addon.CustomBackground = Addon.CustomBackground - dir;
+		if(Addon.CustomBackground > NUM_MAX_BACKGROUNDS) then Addon.CustomBackground = 1 end
+		if(Addon.CustomBackground < 1) then Addon.CustomBackground = NUM_MAX_BACKGROUNDS end
 		
+		print(Addon.CustomBackground, NUM_MAX_BACKGROUNDS);
 	end
 	
 	if(self.db.global.SaveCustomBackground) then

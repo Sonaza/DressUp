@@ -674,8 +674,6 @@ function DressupSettingsButton_OnClick(self)
 end
 
 function Addon:SetDressUpBackground(frame, fileName, classBackground)
-	print("SetDressUpBackground", fileName);
-	
 	local imageWidth = 318;
 	local imageHeight = 332;
 	if(not classBackground) then
@@ -797,8 +795,6 @@ function Addon:SwitchBackground(dir)
 		Addon.CustomBackground = Addon.CustomBackground - dir;
 		if(Addon.CustomBackground > NUM_MAX_BACKGROUNDS) then Addon.CustomBackground = 1 end
 		if(Addon.CustomBackground < 1) then Addon.CustomBackground = NUM_MAX_BACKGROUNDS end
-		
-		print(Addon.CustomBackground, NUM_MAX_BACKGROUNDS);
 	end
 	
 	if(self.db.global.SaveCustomBackground) then

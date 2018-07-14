@@ -1,6 +1,7 @@
 ## 3.0.0
 * Updated for Battle for Azeroth.
 * Added option to hide DressUp buttons on character panel.
+* Added support for the new allied races.
 
 ## 2.3.3
 * Added missing allied race background images.

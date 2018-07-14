@@ -155,8 +155,10 @@ local RACE_IDS = {
 	2, 5, 6, 8, 10, 9,  27, 28, 36,
 	24,
 };
-local NUM_RACE_IDS = 17;
-
+local NUM_RACE_IDS = 19;
+local NUM_ALLIANCE_RACES = 9;
+local NUM_HORDE_RACES = 9;
+	
 local CLASS_BACKGROUNDS = {
 	"Interface\\DRESSUPFRAME\\DressingRoomPaladin",
 	"Interface\\DRESSUPFRAME\\DressingRoomWarrior",
@@ -903,10 +905,13 @@ end
 function Addon:GenerateRaceMenu()
 	local menu = {};
 	
+	local HordeThreshold = 1 + NUM_ALLIANCE_RACES;
+	local NeutralThreshold = HordeThreshold + NUM_HORDE_RACES;
+	
 	local factions = {
 		[1]	= "Alliance",
-		[9] = "Horde",
-		[17] = "Neutral",
+		[HordeThreshold] = "Horde",
+		[NeutralThreshold] = "Neutral",
 	};
 	
 	for k, v in ipairs(RACES) do

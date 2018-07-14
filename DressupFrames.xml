@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-	<Font name="DressupFont" font="Fonts/ARIALN.TTF" outline="NORMAL" virtual="true">
+	<Font name="DressupFont" font="Interface\AddOns\Dressup\media\DORISPP.TTF" outline="NORMAL" virtual="true">
 		<Shadow>
 			<Offset>
 				<AbsDimension x="0" y="-1"/>

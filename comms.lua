@@ -122,7 +122,7 @@ end
 function Addon:InitializeComms()
 	Addon:RegisterEvent("CHAT_MSG_ADDON");
 	Addon:RegisterEvent("CHAT_MSG_SYSTEM");
-	RegisterAddonMessagePrefix("DressUp");
+	C_ChatInfo.RegisterAddonMessagePrefix("DressUp");
 	
 	Addon:RegisterMessageCallback(MESSAGE_TYPES.QUERY_VERSION, function(payload, sender)
 		Addon:ReplyToMessage(payload, {
@@ -251,7 +251,7 @@ function Addon:SendAddonMessage(target, payload, callbacks)
 		};
 	end
 	
-	SendAddonMessage(ADDON_CHANNEL_PREFIX, serialized, "WHISPER", target);
+	C_ChatInfo.SendAddonMessage(ADDON_CHANNEL_PREFIX, serialized, "WHISPER", target);
 	
 	C_Timer.After(1.0, function()
 		-- If message still exists on the table then it time outed

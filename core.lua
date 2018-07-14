@@ -141,17 +141,18 @@ local HIDDEN_SOURCES_LIST = {
 -- 28 - Highmountain Tauren
 -- 29 - Void Elf
 -- 30 - Lightforged Draenei
-
+-- 34 - Dark Iron Dwarf
+-- 36 - Mag'har Orc
 
 local RACES = {
-	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen", "Void Elf", "Lightforged Draenei", --"Dark Iron Dwarf",
-	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin", "Nightborne", "Highmountain Tauren", --"Zandalari Troll",
+	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen", "Void Elf", "Lightforged Draenei", "Dark Iron Dwarf",
+	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin", "Nightborne", "Highmountain Tauren", "Mag'har Orc",
 	"Pandaren",
 };
 
 local RACE_IDS = {
-	1, 3, 4, 7, 11, 22, 29, 30,
-	2, 5, 6, 8, 10, 9,  27, 28,
+	1, 3, 4, 7, 11, 22, 29, 30, 34,
+	2, 5, 6, 8, 10, 9,  27, 28, 36,
 	24,
 };
 local NUM_RACE_IDS = 17;
@@ -193,6 +194,8 @@ local RACE_NAMES = {
 	[28] = "HighmountainTauren",
 	[29] = "VoidElf",
 	[30] = "LightforgedDraenei",
+	[34] = "DarkIronDwarf",
+	[36] = "MagharOrc",
 	
 	["Human"]		= 1,
 	["Dwarf"]		= 3,
@@ -212,7 +215,21 @@ local RACE_NAMES = {
 	["HighmountainTauren"] = 28,
 	["VoidElf"]            = 29,
 	["LightforgedDraenei"] = 30,
+	["DarkIronDwarf"]      = 34,
+	["MagharOrc"]          = 36,
 }
+
+function DressUpRaceDropdown_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:AddLine("Change Preview Race");
+	GameTooltip:AddLine("Do note there are limitations to the previews and some races may look very wrong like having missing textures or 3D armor pieces not working correctly.", 1, 1, 1, true);
+	GameTooltip:AddLine("There is nothing that can be done about it so please just deal with it.", 1, 1, 1, true);
+	GameTooltip:Show();
+end
+
+function DressUpRaceDropdown_OnLeave(self)
+	GameTooltip:Hide();
+end
 
 local tooltip = nil;
 
@@ -391,6 +408,8 @@ function Addon:OnInitialize()
 			
 			WhisperAlertShown = false,
 			
+			ShowPanelButtons = true,
+			
 			PromptForPreviews = true,
 			
 			Size = {
@@ -498,6 +517,16 @@ function Addon:OnEnable()
 	hooksecurefunc(DressUpModel, "Dress", function()
 		Addon:HideConditionalSlots();
 	end);
+end
+
+function Addon:UpdateButtonsVisibility()
+	if (Addon.db.global.ShowPanelButtons) then
+		DressupCharacterPanelSettingsButton:Show();
+		DressUpCharacterPanelWhisperButton:Show();
+	else
+		DressupCharacterPanelSettingsButton:Hide();
+		DressUpCharacterPanelWhisperButton:Hide();
+	end
 end
 
 function CustomDressUpFrameResize_OnEnter(self)
@@ -629,6 +658,15 @@ function DressupSettingsButton_OnClick(self)
 		},
 		{
 			text = "Character Panel", isTitle = true, notCheckable = true,
+		},
+		{
+			text = "Show buttons on character panel",
+			func = function()
+				Addon.db.global.ShowPanelButtons = not Addon.db.global.ShowPanelButtons;
+				Addon:UpdateButtonsVisibility();
+			end,
+			isNotRadio = true,
+			checked = function() return Addon.db.global.ShowPanelButtons end,
 		},
 		{
 			text = "Always hide item levels",

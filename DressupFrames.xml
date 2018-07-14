@@ -281,6 +281,10 @@
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="TOPRIGHT" x="3" y="-29"/>
 		</Anchors>
+		<Scripts>
+			<OnEnter function="DressUpRaceDropdown_OnEnter"/>
+			<OnLeave function="DressUpRaceDropdown_OnLeave"/>
+		</Scripts>
 	</Frame>
 	
 	<CheckButton name="DressUpGenderButtonFemale" parent="DressUpFrame" inherits="UICheckButtonTemplate" id="1">

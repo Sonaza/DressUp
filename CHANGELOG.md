@@ -1,3 +1,7 @@
+## 3.0.0
+* Updated for Battle for Azeroth.
+* Added option to hide DressUp buttons on character panel.
+
 ## 2.3.3
 * Added missing allied race background images.
 * Added the class based background images. Use CTRL+Mouse wheel to switch the background.

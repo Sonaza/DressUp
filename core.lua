@@ -12,10 +12,6 @@ local AceDB = LibStub("AceDB-3.0");
 
 local _;
 
-if(not CustomDressUpFrame) then
-	error("You have updated the addon but only reloaded the interface. Please restart the game.", 1);
-end
-
 -- A bunch of evil trickery, sorry!
 BlizzDressUpFrame               = DressUpFrame;
 BlizzDressUpModel               = DressUpModel;

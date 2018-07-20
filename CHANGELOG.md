@@ -1,3 +1,6 @@
+## 3.0.1
+* Fixed player model frame not taking up the whole space on the dressing room window.
+
 ## 3.0.0
 * Updated for Battle for Azeroth.
 * Added option to hide DressUp buttons on character panel.

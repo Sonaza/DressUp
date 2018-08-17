@@ -1,3 +1,6 @@
+## 3.0.2
+* Moved Heart of Azeroth rank frame on character panel so that it doesn't overlap with item level number.
+
 ## 3.0.1
 * Fixed player model frame not taking up the whole space on the dressing room window.
 

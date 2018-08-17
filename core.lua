@@ -348,10 +348,19 @@ function Addon:UpdatePaperDollItemLevels()
 	end
 end
 
+local HEART_OF_AZEROTH_ITEM_ID = 158075;
+
 function Addon:ShowItemLevels()
 	for slotName, slotId in pairs(paperDollSlots) do
 		local frame = _G[slotName .. "ItemLevel"];
 		frame:Show();
+	end
+	
+	if (Addon:GetItemID(GetInventoryItemLink("player", 2)) == HEART_OF_AZEROTH_ITEM_ID) then
+		if (CharacterNeckSlot ~= nil and CharacterNeckSlot.RankFrame ~= nil) then
+			CharacterNeckSlot.RankFrame:ClearAllPoints();
+			CharacterNeckSlot.RankFrame:SetPoint("CENTER", CharacterNeckSlot, "TOP", 0, -5);
+		end
 	end
 end
 
@@ -359,6 +368,13 @@ function Addon:HideItemLevels()
 	for slotName, slotId in pairs(paperDollSlots) do
 		local frame = _G[slotName .. "ItemLevel"];
 		frame:Hide();
+	end
+	
+	if (Addon:GetItemID(GetInventoryItemLink("player", 2)) == HEART_OF_AZEROTH_ITEM_ID) then
+		if (CharacterNeckSlot ~= nil and CharacterNeckSlot.RankFrame ~= nil) then
+			CharacterNeckSlot.RankFrame:ClearAllPoints();
+			CharacterNeckSlot.RankFrame:SetPoint("CENTER", CharacterNeckSlot, "BOTTOM", 0, 5);
+		end
 	end
 end
 

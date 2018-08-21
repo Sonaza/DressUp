@@ -186,7 +186,7 @@ end
 
 local OriginalHandleModifiedItemClick = HandleModifiedItemClick
 function HandleModifiedItemClick(link, ...)
-	if(link and link:find("|Hdressup")) then
+	if(link and type(link) == "string" and link:find("|Hdressup")) then
 		return;
 	end
 	return OriginalHandleModifiedItemClick(link, ...);

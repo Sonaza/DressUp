@@ -1,3 +1,6 @@
+## 3.0.3
+* Fixed string find error in custom link handling causing errors with other addons.
+
 ## 3.0.2
 * Moved Heart of Azeroth rank frame on character panel so that it doesn't overlap with item level number.
 

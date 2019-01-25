@@ -466,16 +466,28 @@ local DressUpModelOnLeave;
 
 SLASH_DRESSUP1	= "/dressup";
 SLASH_DRESSUP2	= "/dressingroom";
-SlashCmdList["DRESSUP"] = function()
+SlashCmdList["DRESSUP"] = function(msg)
+	local msg = strtrim(strlower(msg or ""));
+	if (msg == "reset" or msg == "resetsize") then
+		Addon:ResetWindowSize();
+	end
 	DressUpFrame_Show();
 end
 
 function Addon:OnEnable()
 	DressUpFrame:SetClampedToScreen(true);
 	DressUpFrame:SetMinResize(384, 474);
-	DressUpFrame:SetMaxResize(1000, 1000);
+	DressUpFrame:SetMaxResize(
+		min(GetScreenWidth() - 50, 950),
+		min(GetScreenHeight() - 50, 950)
+	);
 	
-	DressUpFrame:SetSize(self.db.global.Size.Width, self.db.global.Size.Height);
+	local maxWidth, maxHeight = DressUpFrame:GetMaxResize();
+	if (self.db.global.Size.Width > maxWidth or self.db.global.Size.Height > maxHeight) then
+		Addon:ResetWindowSize();
+	else
+		DressUpFrame:SetSize(self.db.global.Size.Width, self.db.global.Size.Height);
+	end
 	
 	DressUpModelOnEnter = DressUpModel:GetScript("OnEnter");
 	DressUpModelOnLeave = DressUpModel:GetScript("OnLeave");
@@ -567,6 +579,14 @@ end
 function CustomDressUpFrameResize_OnMouseUp(self, button)
 	CustomDressUpFrame:StopMovingOrSizing();
 	CustomDressUpFrame.sizing = false;
+	
+	local width, height = CustomDressUpFrame:GetSize();
+	Addon.db.global.Size.Width = width;
+	Addon.db.global.Size.Height = height;
+end
+
+function Addon:ResetWindowSize()
+	CustomDressUpFrame:SetSize(384, 474);
 	
 	local width, height = CustomDressUpFrame:GetSize();
 	Addon.db.global.Size.Width = width;
@@ -714,6 +734,16 @@ function DressupSettingsButton_OnClick(self)
 			end,
 			checked = function() return Addon.db.global.ColorizedItemLevels end,
 			isNotRadio = true,
+		},
+		{
+			text = " ", isTitle = true, notCheckable = true,
+		},
+		{
+			text = "Reset window size",
+			func = function()
+				Addon:ResetWindowSize()
+			end,
+			notCheckable = true,
 		},
 	};
 	

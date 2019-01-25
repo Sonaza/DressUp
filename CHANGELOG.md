@@ -1,3 +1,7 @@
+## 3.0.4
+* Added window size reset option. Added some additional safeguards to make sure window doesn't get accidentally resized too big.
+** See new slash command **/dressup resetsize** to reset window size.
+
 ## 3.0.3
 * Fixed string find error in custom link handling causing errors with other addons.
 

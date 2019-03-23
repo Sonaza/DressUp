@@ -137,23 +137,25 @@ local HIDDEN_SOURCES_LIST = {
 -- 28 - Highmountain Tauren
 -- 29 - Void Elf
 -- 30 - Lightforged Draenei
+-- 31 - Zandalari Troll
+-- 32 - Kultiran
 -- 34 - Dark Iron Dwarf
 -- 36 - Mag'har Orc
 
 local RACES = {
-	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen", "Void Elf", "Lightforged Draenei", "Dark Iron Dwarf",
-	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin", "Nightborne", "Highmountain Tauren", "Mag'har Orc",
+	"Human", "Dwarf", "Night Elf", "Gnome", "Draenei", "Worgen", "Void Elf", "Lightforged Draenei", "Dark Iron Dwarf", "Kultiran",
+	"Orc", "Undead", "Tauren", "Troll", "Blood Elf", "Goblin", "Nightborne", "Highmountain Tauren", "Mag'har Orc", "Zandalari Troll",
 	"Pandaren",
 };
 
 local RACE_IDS = {
-	1, 3, 4, 7, 11, 22, 29, 30, 34,
-	2, 5, 6, 8, 10, 9,  27, 28, 36,
+	1, 3, 4, 7, 11, 22, 29, 30, 34, 32,
+	2, 5, 6, 8, 10, 9,  27, 28, 36, 31,
 	24,
 };
-local NUM_RACE_IDS = 19;
-local NUM_ALLIANCE_RACES = 9;
-local NUM_HORDE_RACES = 9;
+local NUM_RACE_IDS = 21;
+local NUM_ALLIANCE_RACES = 10;
+local NUM_HORDE_RACES = 10;
 	
 local CLASS_BACKGROUNDS = {
 	"Interface\\DRESSUPFRAME\\DressingRoomPaladin",
@@ -192,8 +194,11 @@ local RACE_NAMES = {
 	[28] = "HighmountainTauren",
 	[29] = "VoidElf",
 	[30] = "LightforgedDraenei",
+	[31] = "ZandalariTroll",
+	[32] = "Kultiran",
 	[34] = "DarkIronDwarf",
 	[36] = "MagharOrc",
+	
 	
 	["Human"]		= 1,
 	["Dwarf"]		= 3,
@@ -213,8 +218,11 @@ local RACE_NAMES = {
 	["HighmountainTauren"] = 28,
 	["VoidElf"]            = 29,
 	["LightforgedDraenei"] = 30,
+	["ZandalariTroll"]     = 31,
+	["Kultiran"]           = 32,
 	["DarkIronDwarf"]      = 34,
 	["MagharOrc"]          = 36,
+	
 }
 
 function DressUpRaceDropdown_OnEnter(self)

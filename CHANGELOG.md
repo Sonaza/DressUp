@@ -1,3 +1,6 @@
+## 3.1.0
+* Support for Zandalari troll and Kultiran human.
+
 ## 3.0.4
 * Added window size reset option. Added some additional safeguards to make sure window doesn't get accidentally resized too big.
 ** See new slash command **/dressup resetsize** to reset window size.

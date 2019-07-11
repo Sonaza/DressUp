@@ -1,3 +1,6 @@
+## 3.1.1
+* Patch 8.2.0.
+
 ## 3.1.0
 * Support for Zandalari troll and Kultiran human.
 

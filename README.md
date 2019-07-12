@@ -21,3 +21,6 @@ DressUp also adds slash commands to open the dressing room: /dressup and /dressi
 
 ## Dependencies
 DressUp uses Ace3 which is included in the /libs directory.
+
+## License
+DressUp is licensed under MIT license. See license terms in file LICENSE.

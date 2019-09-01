@@ -94,7 +94,7 @@
 	
 	<Button name="DressupPreviewButtonHands" inherits="DressupPreviewItemButtonTemplate" id="10">
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="RIGHT" x="-12" y="134"/>
+			<Anchor point="TOPRIGHT" relativeTo="DressUpFrame" relativePoint="RIGHT" x="-12" y="153"/>
 		</Anchors>
 	</Button>
 	<Button name="DressupPreviewButtonWaist" inherits="DressupPreviewItemButtonTemplate" id="6">
@@ -121,6 +121,11 @@
 	<Button name="DressupPreviewButtonOffHand" inherits="DressupPreviewItemButtonTemplate" id="17">
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="DressupPreviewButtonMainHand" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+	</Button>
+	<Button name="DressupPreviewButtonRanged" inherits="DressupPreviewItemButtonTemplate" id="18">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="DressupPreviewButtonOffHand" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
 	</Button>
 	
@@ -157,6 +162,7 @@
 	<Frame name="CharacterTrinket1SlotItemLevel" parent="CharacterTrinket1Slot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterMainHandSlotItemLevel" parent="CharacterMainHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	<Frame name="CharacterSecondaryHandSlotItemLevel" parent="CharacterSecondaryHandSlot" inherits="DressupPaperDollItemLevelTemplate"/>
+	<Frame name="CharacterRangedSlotItemLevel" parent="CharacterRangedSlot" inherits="DressupPaperDollItemLevelTemplate"/>
 	
 	<Button name="DressupSettingsButtonTemplate" virtual="true" inherits="BrowserButtonTemplate">
 		<Layers>
@@ -185,81 +191,6 @@
 			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="2"/>
 		</Anchors>
 	</Button>
-	
-	<Button name="DressUpWhisperButtonTemplate" virtual="true" parentKey="whisperButton">
-		<Size x="32" y="32"/>
-		<Scripts>
-			<OnClick function="DressUpFrameWhisperButton_OnClick"/>
-			<OnEnter function="DressUpFrameWhisperButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-			<OnShow>
-				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-			</OnShow>
-		</Scripts>
-		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
-		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
-		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
-		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-	</Button>
-	
-	<Button name="DressUpPreviewWhisperButton" parent="DressUpFrame" inherits="DressUpWhisperButtonTemplate" id="1">
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-9" y="-66"/>
-		</Anchors>
-		<Frames>
-			<Frame parentKey="Alert" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
-				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="19" y=""/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="DRESSUP_WHISPER_TUTORIAL_TEXT">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								self:GetParent():Hide();
-								DressUpPreviewWhisperButtonAlertCloseButton_OnClick(self);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-						<Anchors>
-							<Anchor point="RIGHT" relativePoint="LEFT" x="34" y="16"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						SetClampedTextureRotation(self.Arrow.Arrow, 90);
-						SetClampedTextureRotation(self.Arrow.Glow, 90);
-						self.Arrow.Glow:Hide();
-					</OnLoad>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight()+42);
-					</OnShow>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Button>
-	
-	<Button name="DressUpCharacterPanelWhisperButton" parent="PaperDollFrame" inherits="DressUpWhisperButtonTemplate" id="2">
-		<Anchors>
-			<Anchor point="LEFT" relativeTo="DressupCharacterPanelSettingsButton" relativePoint="RIGHT" x="-6" y="0"/>
-		</Anchors>
-	</Button>
-	
 	
 	<Button name="DressUpHideArmorButton" parent="DressUpFrame" inherits="UIPanelButtonTemplate" text="Undress All">
 		<Size x="90" y="24"/>

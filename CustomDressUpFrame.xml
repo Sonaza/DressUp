@@ -40,16 +40,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="OutfitDropDown" name="$parentOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="DressUpOutfitMixin">
-				<KeyValues>
-					<KeyValue key="width" value="163" type="number"/>
-					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
-					<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="CustomDressUpModel" x="-40" y="40"/>
-				</Anchors>
-			</Frame>
 			<Button name="CustomDressUpFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size>
 					<AbsDimension x="80" y="22"/>

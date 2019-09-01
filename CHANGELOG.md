@@ -1,3 +1,8 @@
+## 3.2.0
+* Branched to classic version. This version is incompatible with retail.
+* Due to removal of underlying transmog systems some things are a little more difficult (dual wield weapon previews are insanity)
+* Disabled dressup preview sending by whisper. Sorry if you wanted it but I don't care enough to debug that.
+
 ## 3.1.1
 * Patch 8.2.0.
 

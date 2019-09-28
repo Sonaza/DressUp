@@ -230,6 +230,7 @@ function DressUpRaceDropdown_OnEnter(self)
 	GameTooltip:AddLine("Change Preview Race");
 	GameTooltip:AddLine("Do note there are limitations to the previews and some races may look very wrong like having missing textures or 3D armor pieces not working correctly.", 1, 1, 1, true);
 	GameTooltip:AddLine("There is nothing that can be done about it so please just deal with it.", 1, 1, 1, true);
+	GameTooltip:AddLine("|nPatch 8.2.5 seems to have broken the model changing even further and a horror show awaits if you dare try changing the preview options here :)", 1, 1, 1, true);
 	GameTooltip:Show();
 end
 
@@ -240,14 +241,14 @@ end
 local tooltip = nil;
 
 function Addon:GetRealItemLevel(itemLink, itemSlotId)
-	if(not itemLink) then return 0, 0; end
+	if (not itemLink) then return 0, 0; end
 	
-	if(not DressUpInternalTooltip) then
+	if (not DressUpInternalTooltip) then
 		tooltip = CreateFrame("GameTooltip", "DressUpInternalTooltip", UIParent, "GameTooltipTemplate");
 	end
 	
 	tooltip:SetOwner(UIParent, "ANCHOR_NONE");
-	if(itemSlotId) then
+	if (itemSlotId) then
 		tooltip:SetInventoryItem("player", itemSlotId);
 	else
 		tooltip:SetHyperlink(itemLink);
@@ -260,9 +261,9 @@ function Addon:GetRealItemLevel(itemLink, itemSlotId)
 	for row_index = 2, numLines do
 		local left = _G[tooltip:GetName() .. "TextLeft" .. row_index];
 		
-		if(left) then
+		if (left) then
 			local currentItemLevel, defaultItemLevel = string.match(strtrim(left:GetText() or ""), "Item Level (%d+) ?%(?(%d*)%)?");
-			if(currentItemLevel ~= nil) then
+			if (currentItemLevel ~= nil) then
 				currentItemLevel, defaultItemLevel = tonumber(currentItemLevel), tonumber(defaultItemLevel);
 				return currentItemLevel, defaultItemLevel or itemLevel;
 			end
@@ -281,7 +282,7 @@ local ILVL_COLOR_DIFF = {
 };
 
 function Addon:GetRangeColor(value, minvalue, maxvalue)
-	if(not value) then return "ffffff" end
+	if (not value) then return "ffffff" end
 	
 	local progress = (value - minvalue) / math.max(1, maxvalue - minvalue);
 	return string.format("%02x%02x%02x",
@@ -300,10 +301,10 @@ function Addon:GetArtifactItemLevel()
 	local mainhand = GetInventoryItemLink("player", 16);
 	local offhand = GetInventoryItemLink("player", 17);
 	
-	if(not mainhand) then return end
+	if (not mainhand) then return end
 	
 	local _, _, quality = GetItemInfo(mainhand);
-	if(quality ~= 6) then return end
+	if (quality ~= 6) then return end
 	
 	local mainhandItemLevel = Addon:GetRealItemLevel(mainhand, 16);
 	local offhandItemLevel = Addon:GetRealItemLevel(offhand, 17);
@@ -320,19 +321,19 @@ function Addon:UpdatePaperDollItemLevels()
 	for slotName, slotId in pairs(paperDollSlots) do
 		local realSlotId = slotId;
 		local artifactItemLevel;
-		if(realSlotId == 16 or realSlotId == 17) then
+		if (realSlotId == 16 or realSlotId == 17) then
 			artifactItemLevel = Addon:GetArtifactItemLevel();
 		end
 		
 		local link = GetInventoryItemLink("player", slotId);
-		if(link) then
-			if(artifactItemLevel) then
+		if (link) then
+			if (artifactItemLevel) then
 				itemlevels[realSlotId] = artifactItemLevel;
 				lowest = math.min(lowest, artifactItemLevel or 1);
 				highest = math.max(highest, artifactItemLevel or 1);
 			else
 				local itemLevel, defaultItemLevel = Addon:GetRealItemLevel(link, realSlotId);
-				if(itemLevel) then
+				if (itemLevel) then
 					itemlevels[realSlotId] = itemLevel;
 					lowest = math.min(lowest, itemLevel or 1);
 					highest = math.max(highest, itemLevel or 1);
@@ -344,8 +345,8 @@ function Addon:UpdatePaperDollItemLevels()
 	for slotName, slotId in pairs(paperDollSlots) do
 		local frame = _G[slotName .. "ItemLevel"];
 		local itemLevel = itemlevels[slotId];
-		if(itemLevel) then
-			if(self.db.global.ColorizedItemLevels) then
+		if (itemLevel) then
+			if (self.db.global.ColorizedItemLevels) then
 				frame.value:SetText(("|cff%s%d|r"):format(Addon:GetRangeColor(itemLevel, lowest, highest), itemLevel));
 			else
 				frame.value:SetText(("%d"):format(itemLevel));
@@ -391,18 +392,18 @@ local ITEMLEVEL_VISIBILITY_ONALT = 1;
 local ITEMLEVEL_VISIBILITY_SHOW  = 2;
 
 function Addon:MODIFIER_STATE_CHANGED()
-	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_HIDE) then
+	if (self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_HIDE) then
 		Addon:HideItemLevels();
 		return;
 	end
 	
-	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_SHOW) then
+	if (self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_SHOW) then
 		Addon:ShowItemLevels();
 		return;
 	end
 	
-	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_ONALT) then
-		if(IsAltKeyDown()) then
+	if (self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_ONALT) then
+		if (IsAltKeyDown()) then
 			Addon:ShowItemLevels();
 		else
 			Addon:HideItemLevels();
@@ -443,22 +444,22 @@ function Addon:OnInitialize()
 	
 	self.db = AceDB:New("DressupDB", defaults);
 	
-	if(self.db.global.HideItemLevel == true) then
+	if (self.db.global.HideItemLevel == true) then
 		self.db.global.ItemLevelVisibility = ITEMLEVEL_VISIBILITY_HIDE;
 		self.db.global.HideItemLevel = nil;
 	end
 	
-	if(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_SHOW) then
+	if (self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_SHOW) then
 		Addon:ShowItemLevels();
-	elseif(self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_HIDE) then
+	elseif (self.db.global.ItemLevelVisibility == ITEMLEVEL_VISIBILITY_HIDE) then
 		Addon:HideItemLevels();
 	end
 	
-	if(not Addon.db.global.WhisperAlertShown) then
+	if (not Addon.db.global.WhisperAlertShown) then
 		DressUpPreviewWhisperButton.Alert:Show();
 	end
 	
-	if(not Addon.InitializeComms) then
+	if (not Addon.InitializeComms) then
 		error("You have updated the addon but only reloaded the interface. Please restart the game.", 1);
 	end
 	Addon:InitializeComms();
@@ -519,7 +520,7 @@ function Addon:OnEnable()
 	end);
 	
 	DressUpModel:SetScript("OnMouseWheel", function(self, delta)
-		if(not IsControlKeyDown()) then
+		if (not IsControlKeyDown()) then
 			Model_OnMouseWheel(self, delta);
 		else
 			Addon:SwitchBackground(delta);
@@ -527,7 +528,7 @@ function Addon:OnEnable()
 	end);
 	
 	Addon:HookScript(DressUpModel, "OnMouseDown", function(self, button)
-		if(IsControlKeyDown() and button == "MiddleButton") then
+		if (IsControlKeyDown() and button == "MiddleButton") then
 			Addon:SwitchBackground(0);
 		end
 	end);
@@ -543,10 +544,6 @@ function Addon:OnEnable()
 	end);
 	
 	hooksecurefunc(DressUpModel, "TryOn", function(self, ...) Addon:TryOn(...) end);
-	
-	hooksecurefunc("DressUpFrame_Show", function()
-		Addon:HideConditionalSlots();
-	end);
 	
 	hooksecurefunc(DressUpModel, "Dress", function()
 		Addon:HideConditionalSlots();
@@ -574,7 +571,7 @@ function CustomDressUpFrameResize_OnLeave(self)
 end
 
 function CustomDressUpFrameResize_OnUpdate(self, elapsed)
-	if(CustomDressUpFrame.sizing) then
+	if (CustomDressUpFrame.sizing) then
 		Addon:UpdateBackgroundTexCoords();
 	end
 end
@@ -602,10 +599,12 @@ function Addon:ResetWindowSize()
 end
 
 function Addon:ToggleGizmo()
-	if(self.db.global.HideGizmo) then
+	if (self.db.global.HideGizmo) then
 		DressUpModel:SetScript("OnEnter", nil);
 		DressUpModel:SetScript("OnLeave", nil);
-		DressUpModelControlFrame:Hide();
+		if (DressUpModelControlFrame) then
+			DressUpModelControlFrame:Hide();
+		end
 	else
 		DressUpModel:SetScript("OnEnter", DressUpModelOnEnter);
 		DressUpModel:SetScript("OnLeave", DressUpModelOnLeave);
@@ -617,7 +616,7 @@ function DressupSettingsButton_OnLoad(self)
 end
 
 function DressupSettingsButton_OnClick(self)
-	if(not Addon.ContextMenu) then
+	if (not Addon.ContextMenu) then
 		Addon.ContextMenu = CreateFrame("Frame", ADDON_NAME .. "ContextMenuFrame", UIParent, "UIDropDownMenuTemplate");
 	end
 	
@@ -638,9 +637,9 @@ function DressupSettingsButton_OnClick(self)
 			text = "Save custom background",
 			func = function()
 				Addon.db.global.SaveCustomBackground = not Addon.db.global.SaveCustomBackground;
-				if(not Addon.db.global.SaveCustomBackground) then
+				if (not Addon.db.global.SaveCustomBackground) then
 					Addon.db.global.CustomBackground = nil;
-				elseif(Addon.CustomBackground) then
+				elseif (Addon.CustomBackground) then
 					Addon.db.global.CustomBackground = Addon.CustomBackground;
 				end
 			end,
@@ -654,10 +653,13 @@ function DressupSettingsButton_OnClick(self)
 			isNotRadio = true,
 		},
 		{
-			text = "Disable side panel preview",
-			func = function() Addon.db.global.DisableSidePanel = not Addon.db.global.DisableSidePanel; end,
-			checked = function() return Addon.db.global.DisableSidePanel end,
+			text = "Disable side panel preview (can't be toggled)",
+			--func = function() Addon.db.global.DisableSidePanel = not Addon.db.global.DisableSidePanel; end,
+			--checked = function() return Addon.db.global.DisableSidePanel end,
+			func = function() end,
+			checked = true,
 			isNotRadio = true,
+			disabled = true,
 		},
 		{
 			text = "Prompt when receiving preview whisper",
@@ -766,7 +768,7 @@ end
 function Addon:SetDressUpBackground(frame, fileName, classBackground)
 	local imageWidth = 318;
 	local imageHeight = 332;
-	if(not classBackground) then
+	if (not classBackground) then
 		fileName = fileName or "Orc";
 		frame.background:SetTexture("Interface\\AddOns\\DressUp\\media\\Background-" .. fileName);
 	else
@@ -780,9 +782,9 @@ function Addon:SetDressUpBackground(frame, fileName, classBackground)
 end
 
 function Addon:UpdateBackgroundTexCoords(imageWidth, imageHeight)
-	if(imageWidth) then Addon.CurrentImageWidth = imageWidth end
-	if(imageHeight) then Addon.CurrentImageHeight = imageHeight end
-	if(not Addon.CurrentImageWidth or not Addon.CurrentImageHeight) then return end
+	if (imageWidth) then Addon.CurrentImageWidth = imageWidth end
+	if (imageHeight) then Addon.CurrentImageHeight = imageHeight end
+	if (not Addon.CurrentImageWidth or not Addon.CurrentImageHeight) then return end
 	
 	local width, height = CustomDressUpModel:GetSize();
 	local ratio = width / height;
@@ -796,7 +798,7 @@ function Addon:UpdateBackgroundTexCoords(imageWidth, imageHeight)
 	
 	local x, y = 1, 1;
 	
-	if(ratio <= origRatio) then
+	if (ratio <= origRatio) then
 		x = ratio / origRatio;
 	else
 		y = origRatio / ratio;
@@ -811,7 +813,7 @@ function Addon:UpdateBackgroundTexCoords(imageWidth, imageHeight)
 end
 
 function Addon:UpdateBackgroundDim()
-	if(self.db.global.DimBackground) then
+	if (self.db.global.DimBackground) then
 		CustomDressUpBackground:SetVertexColor(0.52, 0.52, 0.52);
 	else
 		CustomDressUpBackground:SetVertexColor(1.0, 1.0, 1.0);
@@ -825,17 +827,17 @@ function Addon:ResetRaceSelect()
 	Addon.SelectedRace = -1;
 	Addon.SelectedGender = UnitSex("player")-2;
 	
-	if(Addon.SelectedGender == 0) then
+	if (Addon.SelectedGender == 0) then
 		DressUpGenderButtonMale:SetChecked(true);
 		DressUpGenderButtonFemale:SetChecked(false);
-	elseif(Addon.SelectedGender == 1) then
+	elseif (Addon.SelectedGender == 1) then
 		DressUpGenderButtonMale:SetChecked(false);
 		DressUpGenderButtonFemale:SetChecked(true);
 	end
 	
 	DressUpModel:SetUnit("player");
 	
-	if(self.db.global.SaveCustomBackground and self.db.global.CustomBackground) then
+	if (self.db.global.SaveCustomBackground and self.db.global.CustomBackground) then
 		Addon.CustomBackground = self.db.global.CustomBackground;
 		Addon:SetCustomBackground(self.db.global.CustomBackground);
 	else
@@ -847,31 +849,31 @@ end
 
 function Addon:GetRaceIndex(raceID)
 	for k, id in ipairs(RACE_IDS) do
-		if(id == raceID) then return k end
+		if (id == raceID) then return k end
 	end
 	
 	return nil;
 end
 
 function Addon:SetCustomBackground(background_id)
-	if(not background_id) then return end
+	if (not background_id) then return end
 	
-	if(background_id == 0) then
+	if (background_id == 0) then
 		Addon:SetDressUpBackground(DressUpFrame, "Pet");
-	elseif(background_id > 0 and background_id <= NUM_RACE_IDS) then
+	elseif (background_id > 0 and background_id <= NUM_RACE_IDS) then
 		Addon:SetDressUpBackground(DressUpFrame, RACE_NAMES[RACE_IDS[background_id]]);
-	elseif(background_id > NUM_RACE_IDS) then
+	elseif (background_id > NUM_RACE_IDS) then
 		Addon:SetDressUpBackground(DressUpFrame, CLASS_BACKGROUNDS[background_id - NUM_RACE_IDS], true);
 	end
 end
 
 function Addon:SwitchBackground(dir)
-	if(dir == 0) then
+	if (dir == 0) then
 		Addon.CustomBackground = 0;
 	else
-		if(Addon.CustomBackground == nil or Addon.CustomBackground == 0) then
+		if (Addon.CustomBackground == nil or Addon.CustomBackground == 0) then
 			local id;
-			if(Addon.SelectedRace == -1) then
+			if (Addon.SelectedRace == -1) then
 				local _, raceId = UnitRace("player");
 				id = RACE_NAMES[raceId];
 			else
@@ -883,11 +885,11 @@ function Addon:SwitchBackground(dir)
 		end
 		
 		Addon.CustomBackground = Addon.CustomBackground - dir;
-		if(Addon.CustomBackground > NUM_MAX_BACKGROUNDS) then Addon.CustomBackground = 1 end
-		if(Addon.CustomBackground < 1) then Addon.CustomBackground = NUM_MAX_BACKGROUNDS end
+		if (Addon.CustomBackground > NUM_MAX_BACKGROUNDS) then Addon.CustomBackground = 1 end
+		if (Addon.CustomBackground < 1) then Addon.CustomBackground = NUM_MAX_BACKGROUNDS end
 	end
 	
-	if(self.db.global.SaveCustomBackground) then
+	if (self.db.global.SaveCustomBackground) then
 		self.db.global.CustomBackground = Addon.CustomBackground;
 	end
 	
@@ -897,22 +899,22 @@ end
 function SetDressUpAlpha(alpha, brightness, desaturate)
 	local b = brightness;
 	
-	if(DressUpFrame.BGTopLeft) then
+	if (DressUpFrame.BGTopLeft) then
 		DressUpFrame.BGTopLeft:SetVertexColor(b, b, b, alpha);
 		DressUpFrame.BGTopLeft:SetDesaturated(desaturate);
 	end
 	
-	if(DressUpFrame.BGTopRight) then
+	if (DressUpFrame.BGTopRight) then
 		DressUpFrame.BGTopRight:SetVertexColor(b, b, b, alpha);
 		DressUpFrame.BGTopRight:SetDesaturated(desaturate);
 	end
 	
-	if(DressUpFrame.BGBottomLeft) then
+	if (DressUpFrame.BGBottomLeft) then
 		DressUpFrame.BGBottomLeft:SetVertexColor(b, b, b, alpha);
 		DressUpFrame.BGBottomLeft:SetDesaturated(desaturate);
 	end
 	
-	if(DressUpFrame.BGBottomRight) then
+	if (DressUpFrame.BGBottomRight) then
 		DressUpFrame.BGBottomRight:SetVertexColor(b, b, b, alpha);
 		DressUpFrame.BGBottomRight:SetDesaturated(desaturate);
 	end
@@ -923,15 +925,15 @@ function DressUpGenderButton_OnClick(self)
 	
 	CloseMenus();
 	
-	if(Addon.SelectedGender ~= gender) then
+	if (Addon.SelectedGender ~= gender) then
 		DressUpModel:SetCustomRace(Addon.SelectedRace, gender);
 		Addon:ReapplyPreviewItems();
 	end
 	
-	if(gender == 0) then
+	if (gender == 0) then
 		DressUpGenderButtonMale:SetChecked(true);
 		DressUpGenderButtonFemale:SetChecked(false);
-	elseif(gender == 1) then
+	elseif (gender == 1) then
 		DressUpGenderButtonMale:SetChecked(false);
 		DressUpGenderButtonFemale:SetChecked(true);
 	end
@@ -943,7 +945,7 @@ function DressUpRaceDropdown_SelectOption(self)
 	Addon.SelectedRace = self.value.id;
 	
 	DressUpModel:SetCustomRace(self.value.id, Addon.SelectedGender);
-	if(Addon.CustomBackground == nil) then
+	if (Addon.CustomBackground == nil) then
 		Addon:SetDressUpBackground(DressUpFrame, RACE_NAMES[self.value.id]);
 	end
 	
@@ -965,8 +967,8 @@ function Addon:GenerateRaceMenu()
 	};
 	
 	for k, v in ipairs(RACES) do
-		if(factions[k] ~= nil) then
-			if(k > 1) then
+		if (factions[k] ~= nil) then
+			if (k > 1) then
 				tinsert(menu, {
 					text = " ", isTitle = true, notCheckable = true,
 				});
@@ -992,7 +994,7 @@ function Addon:GenerateRaceMenu()
 end
 
 function DressUpRaceDropdown_OnClick()
-	if(DropDownList1:IsVisible()) then 
+	if (DropDownList1:IsVisible()) then 
 		CloseMenus(); 
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	return end
@@ -1028,11 +1030,11 @@ end
 function DressupPreviewItemButton_OnClick(self, button)
 	local slot = self:GetID();
 	
-	if(button == "LeftButton" and IsShiftKeyDown()) then
-		if(Addon.ItemButtons[slot].itemLink) then
+	if (button == "LeftButton" and IsShiftKeyDown()) then
+		if (Addon.ItemButtons[slot].itemLink) then
 			ChatEdit_InsertLink(Addon.ItemButtons[slot].itemLink)
 		end
-	elseif(button == "RightButton") then
+	elseif (button == "RightButton") then
 		Addon:SetButtonItem(slot, nil);
 		DressUpModel:UndressSlot(slot);
 		
@@ -1047,7 +1049,7 @@ function DressupPreviewItemButton_OnEnter(self)
 	
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 40);
 	
-	if(Addon.ItemButtons[slot].itemLink) then
+	if (Addon.ItemButtons[slot].itemLink) then
 		GameTooltip:SetHyperlink(Addon.ItemButtons[slot].itemLink);
 	else
 		GameTooltip:AddLine(Addon.ItemButtons[slot].slotName);
@@ -1057,7 +1059,7 @@ function DressupPreviewItemButton_OnEnter(self)
 	
 	ShoppingTooltip1:Hide();
 	ShoppingTooltip2:Hide();
-	if(ShoppingTooltip3) then ShoppingTooltip3:Hide(); end
+	if (ShoppingTooltip3) then ShoppingTooltip3:Hide(); end
 end
 
 function DressupPreviewItemButton_OnLeave(self)
@@ -1065,7 +1067,7 @@ function DressupPreviewItemButton_OnLeave(self)
 end
 
 function Addon:InitializeItemButtons()
-	local buttons = {
+	local DressupPreviewButtons = {
 		DressupPreviewButtonHead,
 		DressupPreviewButtonShoulder,
 		DressupPreviewButtonBack,
@@ -1081,7 +1083,7 @@ function Addon:InitializeItemButtons()
 		DressupPreviewButtonOffHand,
 	};
 	
-	for _, buttonFrame in ipairs(buttons) do
+	for _, buttonFrame in ipairs(DressupPreviewButtons) do
 		local slot = buttonFrame:GetID();
 		
 		local invslot = INVENTORY_SLOT_NAMES[slot];
@@ -1097,6 +1099,30 @@ function Addon:InitializeItemButtons()
 		
 		buttonFrame.icon:Hide();
 	end
+end
+
+function Addon:ShowPlayerDressupButtons()
+	for _, buttonFrame in pairs(Addon.ItemButtons) do
+		buttonFrame.Frame:Show();
+	end
+	DressUpPreviewWhisperButton:Show();
+	DressUpRaceDropdown:Show();
+	DressUpGenderButtonFemale:Show();
+	DressUpGenderButtonMale:Show();
+	DressUpHideArmorButton:Show();
+	DressUpFrameOutfitDropDown:Show();
+end
+
+function Addon:HidePlayerDressupButtons()
+	for _, buttonFrame in pairs(Addon.ItemButtons) do
+		buttonFrame.Frame:Hide();
+	end
+	DressUpPreviewWhisperButton:Hide();
+	DressUpRaceDropdown:Hide();
+	DressUpGenderButtonFemale:Hide();
+	DressUpGenderButtonMale:Hide();
+	DressUpHideArmorButton:Hide();
+	DressUpFrameOutfitDropDown:Hide();
 end
 
 function Addon:GetInfoForSlot(slot_id, transmogType)
@@ -1120,18 +1146,18 @@ function Addon:GetInfoForSlot(slot_id, transmogType)
 end
 
 function Addon:HideConditionalSlots()
-	if(not Addon.db.global.StartUndressed) then
-		if(Addon.db.global.HideTabard) then
+	if (not Addon.db.global.StartUndressed) then
+		if (Addon.db.global.HideTabard) then
 			DressUpModel:UndressSlot(19);
 			Addon:SetButtonItem(19, nil);
 		end
 		
-		if(Addon.db.global.HideShirt) then
+		if (Addon.db.global.HideShirt) then
 			DressUpModel:UndressSlot(4);
 			Addon:SetButtonItem(4, nil);
 		end
 		
-		if(Addon.db.global.HideWeapons) then
+		if (Addon.db.global.HideWeapons) then
 			DressUpModel:UndressSlot(16);
 			Addon:SetButtonItem(16, nil);
 			
@@ -1144,29 +1170,29 @@ function Addon:HideConditionalSlots()
 end
 
 function Addon:ResetItemButtons(setEquipment, noOutfitReset)
-	if(not noOutfitReset) then
+	if (not noOutfitReset) then
 		DressUpFrameOutfitDropDown:SelectOutfit(nil, false);
 	end
 	
 	for slot, button in pairs(Addon.ItemButtons) do
 		local itemlink = nil;
 		
-		if(setEquipment and not Addon.db.global.StartUndressed) then
+		if (setEquipment and not Addon.db.global.StartUndressed) then
 			local skip = false;
-			if(slot == 19 and Addon.db.global.HideTabard) then skip = true; end
-			if(slot == 4 and Addon.db.global.HideShirt) then skip = true; end
-			if((slot == 16 or slot == 17) and Addon.db.global.HideWeapons) then skip = true; end
+			if (slot == 19 and Addon.db.global.HideTabard) then skip = true; end
+			if (slot == 4 and Addon.db.global.HideShirt) then skip = true; end
+			if ((slot == 16 or slot == 17) and Addon.db.global.HideWeapons) then skip = true; end
 			
-			if(not Addon:IsSlotHidden(slot) and not skip) then
+			if (not Addon:IsSlotHidden(slot) and not skip) then
 				itemlink = GetInventoryItemLink("player", slot)
 				
-				if(itemlink) then
+				if (itemlink) then
 					local isTransmogrified, hasPending, _, _, _, hasUndo, isHideVisual = C_Transmog.GetSlotInfo(slot, LE_TRANSMOG_TYPE_APPEARANCE);
 					local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = Addon:GetInfoForSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE)
 				
-					if(isTransmogrified and not isHideVisual) then
+					if (isTransmogrified and not isHideVisual) then
 						itemlink = Addon:GetItemLinkFromSource(appliedSourceID);
-					elseif(isHideVisual) then
+					elseif (isHideVisual) then
 						itemlink = nil;
 					end
 				end
@@ -1183,10 +1209,10 @@ function Addon:ReapplyPreviewItems()
 	DressUpModel:Undress();
 	
 	for slot = 1, 19 do
-		if(Addon:IsSlotTransmogrifiable(slot)) then
+		if (Addon:IsSlotTransmogrifiable(slot)) then
 			-- Refresh the actual preview items
 			local item = Addon:GetSlotItem(slot);
-			if(item) then
+			if (item) then
 				DressUpModel:TryOn(item, INVENTORY_SLOT_NAMES[slot]);
 			else
 				DressUpModel:UndressSlot(slot);
@@ -1201,9 +1227,9 @@ function DressUpHideArmorButton_OnClick(self)
 end
 
 function Addon:IsSlotHidden(slot_id)
-	if(slot_id == 1 and not Addon:ShowingHelm()) then return true end
-	if(slot_id == 3 and not Addon:ShowingShoulders()) then return true end
-	if(slot_id == 15 and not Addon:ShowingCloak()) then return true end
+	if (slot_id == 1 and not Addon:ShowingHelm()) then return true end
+	if (slot_id == 3 and not Addon:ShowingShoulders()) then return true end
+	if (slot_id == 15 and not Addon:ShowingCloak()) then return true end
 	return false;
 end
 
@@ -1224,18 +1250,18 @@ end
 
 function Addon:GetItemSourceID(slot)
 	local slotID, slotName;
-	if(type(slot) == "string") then
+	if (type(slot) == "string") then
 		slotID   = INVENTORY_SLOT_NAMES[slot];
 		slotName = slot;
 	else
 		slotID   = slot;
 		slotName = INVENTORY_SLOT_NAMES[slot];
 	end
-	return DressUpFrameOutfitDropDown:GetSlotSourceID(slotName, LE_TRANSMOG_TYPE_APPEARANCE);
+	return Addon:GetSlotSourceID(slotName, LE_TRANSMOG_TYPE_APPEARANCE);
 end
 
 function Addon:GetItemLinkFromSource(sourceID)
-	if(not sourceID) then return end
+	if (not sourceID) then return end
 	
 	local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
 	return link;
@@ -1250,41 +1276,63 @@ function Addon:IsSlotTransmogrifiable(slot)
 end
 
 function Addon:GetTransmogItemLinkFromSlot(slotID)
-	if(not slotID) then return end
+	if (not slotID) then return end
 	
 	-- local isTransmogrified, _, _, _, _, hasUndo, isHideVisual = C_Transmog.GetSlotInfo(slotID, LE_TRANSMOG_TYPE_APPEARANCE);
-	-- if(not isTransmogrified or isHideVisual) then return nil end
+	-- if (not isTransmogrified or isHideVisual) then return nil end
 	
 	local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = Addon:GetInfoForSlot(slotID, LE_TRANSMOG_TYPE_APPEARANCE);
 	return Addon:GetItemLinkFromSource(appliedSourceID);
 end
 
--- Overwrite the blizz function
+-- Overwrite some blizz functions
+local _DressUpFrame_Show = DressUpFrame_Show;
+function DressUpFrame_Show()
+	if ( not DressUpFrame:IsShown() or DressUpFrame.mode ~= "player") then
+		DressUpFrame.mode = "player";
+		DressUpFrame.ResetButton:Show();
+
+		--local className, classFileName = UnitClass("player");
+		--SetDressUpBackground(DressUpFrame, nil, classFileName);
+
+		ShowUIPanel(DressUpFrame);
+		DressUpModel:SetPosition(0,0,0);
+		DressUpModel:SetUnit("player");
+		
+		Addon:HideConditionalSlots();
+		Addon:ShowPlayerDressupButtons();
+		Addon:ResetItemButtons(true);
+	end
+end
+
 local _DressUpVisual = DressUpVisual;
 function DressUpVisual(...)
-	if ( not Addon.db.global.DisableSidePanel and SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
-		if ( not SideDressUpFrame:IsShown() or SideDressUpFrame.mode ~= "player" ) then
-			SideDressUpFrame.mode = "player";
-			SideDressUpFrame.ResetButton:Show();
+	-- 8.2.5 changes would now require creating custom frames for the SideDressUpFrame too
+	-- and I really don't care enough to fix that. So, off you go, no more SideDressUpFrame.
+	
+	--if ( not Addon.db.global.DisableSidePanel and SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
+	--	if ( not SideDressUpFrame:IsShown() or SideDressUpFrame.mode ~= "player" ) then
+	--		SideDressUpFrame.mode = "player";
+	--		SideDressUpFrame.ResetButton:Show();
 
-			local race, fileName = UnitRace("player");
-			SetDressUpBackground(SideDressUpFrame, fileName);
+	--		local race, fileName = UnitRace("player");
+	--		SetDressUpBackground(SideDressUpFrame, fileName);
 
-			ShowUIPanel(SideDressUpFrame);
-			SideDressUpModel:SetUnit("player");
-		end
-		SideDressUpModel:TryOn(...);
-	else
-		if(not DressUpFrame:IsShown()) then
+	--		ShowUIPanel(SideDressUpFrame);
+	--		SideDressUpModel:SetUnit("player");
+	--	end
+	--	SideDressUpModel:TryOn(...);
+	--else
+		if (not DressUpFrame:IsShown()) then
 			DressUpFrame_Show();
 		end
 		DressUpModel:TryOn(...);
-	end
+	--end
 	return true;
 end
 
-hooksecurefunc("DressUpSources", function(...) Addon:DressUpSources(...) end);
-function Addon:DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
+local _DressUpSources = DressUpSources;
+function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
 	if ( not appearanceSources ) then
 		return true;
 	end
@@ -1308,13 +1356,61 @@ function Addon:DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant
 	DressUpModel:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
 end
 
+local _DressUpBattlePet = DressUpBattlePet;
+function DressUpBattlePet(creatureID, displayID)
+	if ( not displayID and not creatureID ) then
+		return false;
+	end
+	
+	Addon:HidePlayerDressupButtons();
+
+	-- See, no SideDressUpFrame here
+	local frame = DressUpFrame;
+	local model = DressUpModel;
+
+	--Show the frame
+	if ( not frame:IsShown() or frame.mode ~= "battlepet" ) then
+		--SetDressUpBackground(frame, fileName, atlasPostfix);
+		ShowUIPanel(frame);
+	end
+
+	--Set up the model on the frame
+	frame.mode = "battlepet";
+	frame.ResetButton:Hide();
+	if ( displayID and displayID ~= 0 ) then
+		model:SetPosition(0,0,0);
+		model:SetDisplayInfo(displayID);
+	else
+		model:SetPosition(0,0,0);
+		model:SetCreature(creatureID);
+	end
+	return true;
+end
+
+function Addon:GetSlotSourceID(slot, transmogType)
+	local slotID = GetInventorySlotInfo(slot);
+	local appearanceSourceID, illusionSourceID = DressUpModel:GetSlotTransmogSources(slotID);
+	if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
+		return appearanceSourceID;
+	elseif ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
+		return illusionSourceID;
+	end
+end
+
+-- Override the default method in the mixin
+DressUpFrameOutfitDropDown.GetSlotSourceID = function(self, slot, transmogType)
+	return Addon:GetSlotSourceID(slot, transmogType);
+end
+
 function Addon:TryOn(itemSource, previewSlot, enchantID)
-	if(not itemSource) then return end
+	if (not itemSource) then return end
+	
+	DressUpFrame_Show();
 	
 	-- Reset item slot if it's zero
-	if(itemSource == 0 and previewSlot) then
+	if (itemSource == 0 and previewSlot) then
 		targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
-		if(not targetSlotID) then
+		if (not targetSlotID) then
 			targetSlotID = Addon:GetInvSlot(itemEquipLoc);
 		end
 		
@@ -1323,7 +1419,7 @@ function Addon:TryOn(itemSource, previewSlot, enchantID)
 	end
 	
 	local itemlink;
-	if(type(itemSource) == "number") then
+	if (type(itemSource) == "number") then
 		-- Get itemlink from source id
 		itemlink = Addon:GetItemLinkFromSource(itemSource);
 	else
@@ -1332,27 +1428,27 @@ function Addon:TryOn(itemSource, previewSlot, enchantID)
 	end
 	
 	local targetSlotID;
-	if(itemlink) then
+	if (itemlink) then
 		local _, _, _, _, _, itemType, itemSubType, _, itemEquipLoc = GetItemInfo(itemlink);
 		
 		targetSlotID = previewSlot and GetInventorySlotInfo(previewSlot) or nil;
-		if(not targetSlotID) then
+		if (not targetSlotID) then
 			targetSlotID = Addon:GetInvSlot(itemEquipLoc);
 		end
 		
 		-- Don't display hidden sources
-		if(HIDDEN_SOURCES_LIST[itemSource]) then return end
+		if (HIDDEN_SOURCES_LIST[itemSource]) then return end
 		
 		Addon:SetButtonItem(targetSlotID, itemlink);
 	end
 	
-	if(targetSlotID == 16 or targetSlotID == 17) then
+	if (targetSlotID == 16 or targetSlotID == 17) then
 		Addon:SetWeaponButtons();
 	end
 end
 
 function Addon:UpdatePreviewSlot(slotID)
-	if(not slotID) then return end
+	if (not slotID) then return end
 	local sourceID = Addon:GetItemSourceID(slotID);
 	Addon:SetButtonItem(slotID, Addon:GetItemLinkFromSource(sourceID));
 end
@@ -1368,16 +1464,16 @@ function Addon:ForceCacheLoad(itemList)
 	local needsDelay = false;
 	
 	for slotID = 1, 18 do
-		if(itemList[slotID] and itemList[slotID] ~= 0) then
+		if (itemList[slotID] and itemList[slotID] ~= 0) then
 			local itemLink = Addon:GetItemLinkFromSource(itemList[slotID]);
 			local item = GetItemInfo(itemLink);
-			if(not item) then needsDelay = true end
+			if (not item) then needsDelay = true end
 		end
 	end
 	
-	if(itemList[19] and itemList[19] ~= 0) then
+	if (itemList[19] and itemList[19] ~= 0) then
 		local item = GetItemInfo(itemList[19]);
-		if(not item) then needsDelay = true end
+		if (not item) then needsDelay = true end
 	end
 	
 	return needsDelay;
@@ -1403,7 +1499,7 @@ function Addon:LoadItemList(itemList)
 	C_Timer.After(needsDelay and 0.12 or 0, function()
 		DressUpSources(unpack(sourceList));
 		
-		if(tabard ~= 0) then
+		if (tabard ~= 0) then
 			local _, tabard = GetItemInfo(tabard);
 			DressUpModel:TryOn(tabard);
 		end
@@ -1411,28 +1507,28 @@ function Addon:LoadItemList(itemList)
 end
 
 function Addon:GetInvSlot(equiploc)
-	if(equiploc == "") then return nil end
+	if (equiploc == "") then return nil end
 	return INVENTORY_SLOTS[equiploc] or nil;
 end
 
 function Addon:SetButtonItem(slot, itemlink)
-	if(not Addon.ItemButtons[slot]) then return end
+	if (not Addon.ItemButtons[slot]) then return end
 	
 	local rarity, texture = 0, nil;
-	if(itemlink) then
+	if (itemlink) then
 		_, _, rarity, _, _, _, _, _, _, texture = GetItemInfo(itemlink);
 	end
 	
 	Addon.ItemButtons[slot].itemLink = itemlink;
 	
-	if(texture) then
+	if (texture) then
 		Addon.ItemButtons[slot].Frame.icon:SetTexture(texture)
 		Addon.ItemButtons[slot].Frame.icon:Show();
 	else
 		Addon.ItemButtons[slot].Frame.icon:Hide();
 	end
 	
-	if(rarity and (rarity >= 2 and rarity <= 7)) then
+	if (rarity and (rarity >= 2 and rarity <= 7)) then
 		local c = ITEM_QUALITY_COLORS[rarity];
 		Addon.ItemButtons[slot].Frame.border:SetBlendMode("ADD");
 		Addon.ItemButtons[slot].Frame.border:SetVertexColor(c.r, c.g, c.b, 1.0);
@@ -1443,7 +1539,7 @@ function Addon:SetButtonItem(slot, itemlink)
 end
 
 function Addon:GetSlotItem(slot)
-	if(Addon.ItemButtons[slot]) then
+	if (Addon.ItemButtons[slot]) then
 		return Addon.ItemButtons[slot].itemLink;
 	end
 	
@@ -1451,7 +1547,7 @@ function Addon:GetSlotItem(slot)
 end
 
 function Addon:GetItemID(itemLink)
-	if(not itemLink) then return end
+	if (not itemLink) then return end
 	
 	local itemID = strmatch(itemLink, "item:(%d+)");
 	return itemID and tonumber(itemID) or nil;
@@ -1462,12 +1558,12 @@ function Addon:GetPreviewedItemsList()
 	for _, slotID in ipairs(VISIBLE_SLOTS) do
 		local sourceID = Addon:GetItemSourceID(slotID);
 		
-		if(slotID == 19) then
+		if (slotID == 19) then
 			local link = Addon:GetSlotItem(19);
 			sourceID = Addon:GetItemID(link);
 		end
 		
-		if(sourceID and sourceID ~= 0 and not HIDDEN_SOURCES_LIST[sourceID]) then
+		if (sourceID and sourceID ~= 0 and not HIDDEN_SOURCES_LIST[sourceID]) then
 			items[slotID] = sourceID;
 		end
 	end

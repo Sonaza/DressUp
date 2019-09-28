@@ -1,3 +1,12 @@
+## 3.2.0
+* Update for patch 8.2.5.
+* Fixed calls to Blizzard code that don't work with the old DressUpModel.
+	* Blizzard's original dressing room switched to use a new model frame called ModelScene. Seems the change did not remove the original DressUpModel frame, though all of the dependent function calls in this addon suddenly became non-functional.
+	* Because of the changes, this addon now imports and overwrites even more of the original code compared to before. I hope this doesn't cause more problems.
+	* The patch seems to have removed the last remnants of sanity for different gender and race previews and now every last bit of it is a horror show. I can't say if the new ModelScene could improve it, however it doesn't directly offer any way to easily change preview gender and race and therefore this addon still uses the old DressUpModel.
+	* Side dressup panel (at auction house) would now also require custom overrides and that's so much effort I reaaaaally don't care to spend the effort. So now side dressup panel is permanently disabled. Sorry if you liked it but we can't all win.
+* Fixed battle pet previews. Irrelevant stuff is hidden when previewing battle pets.
+
 ## 3.1.1
 * Patch 8.2.0.
 

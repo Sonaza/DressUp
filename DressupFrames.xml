@@ -260,7 +260,6 @@
 		</Anchors>
 	</Button>
 	
-	
 	<Button name="DressUpHideArmorButton" parent="DressUpFrame" inherits="UIPanelButtonTemplate" text="Undress All">
 		<Size x="90" y="24"/>
 		<Anchors>
